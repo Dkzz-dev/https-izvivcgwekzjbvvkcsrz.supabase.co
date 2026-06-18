@@ -9,189 +9,182 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2130;--bg4:#21262d;
-  --border:#30363d;--border2:#21262d;
-  --text:#e6edf3;--text2:#8b949e;--text3:#6e7681;
-  --blue:#388bfd;--blue2:#1f6feb;--bluebg:#0d2a4a;
-  --green:#3fb950;--greenbg:#0a2a15;
-  --amber:#d29922;--amberbg:#2a1f0a;
-  --red:#f85149;--redbg:#2a0a0a;
-  --purple:#bc8cff;--purplebg:#1a0d2e;
-  --accent:#388bfd;
-  --radius:8px;--radius-lg:12px;
+  --bg:#0b0f17;--bg2:#10151f;--bg3:#161c29;--bg4:#1c2433;
+  --border:#232b3a;--border2:#1a2030;
+  --text:#e8edf5;--text2:#8d97ab;--text3:#5f6878;
+  --blue:#4d8ef5;--blue2:#2563eb;--bluebg:#0f2347;
+  --green:#33c481;--greenbg:#0c2a1f;
+  --amber:#e0a83a;--amberbg:#2e2310;
+  --orange:#e8854a;--orangebg:#2e1d10;
+  --red:#f0556a;--redbg:#2e1018;
+  --purple:#9b7cf0;--purplebg:#1f1832;
+  --radius:10px;--radius-lg:14px;
 }
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh;display:flex;flex-direction:column}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;min-height:100vh}
 a{color:var(--blue);text-decoration:none}
 
-/* LAYOUT */
 .app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:16px;flex-shrink:0;z-index:100}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;gap:20px;flex-shrink:0;z-index:100}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;color:var(--text)}
-.logo-icon{width:32px;height:32px;background:var(--blue2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--blue2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#fff;letter-spacing:-.02em}
 .logo-sub{font-size:11px;color:var(--text2);font-weight:400}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.user-badge{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:24px;padding:6px 14px 6px 6px;font-size:12px;color:var(--text2)}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
 .main{display:flex;flex:1;overflow:hidden}
-.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);flex-shrink:0;overflow-y:auto;padding:12px 0}
-.sidebar-section{padding:8px 12px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);font-weight:600}
-.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;color:var(--text2);cursor:pointer;transition:all .15s;font-size:13px;border-left:2px solid transparent}
+.sidebar{width:226px;background:var(--bg2);border-right:1px solid var(--border);flex-shrink:0;overflow-y:auto;padding:14px 0}
+.sidebar-section{padding:10px 16px 6px;font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);font-weight:700}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 16px;color:var(--text2);cursor:pointer;transition:all .15s;font-size:13px;border-left:2px solid transparent;margin:1px 0}
 .nav-item:hover{background:var(--bg3);color:var(--text)}
-.nav-item.active{background:var(--bluebg);color:var(--blue);border-left-color:var(--blue)}
-.nav-icon{width:16px;text-align:center;font-size:15px}
-.content{flex:1;overflow-y:auto;padding:24px}
+.nav-item.active{background:var(--bluebg);color:#9cc2fb;border-left-color:var(--blue)}
+.nav-icon{width:16px;text-align:center;font-size:14px}
+.content{flex:1;overflow-y:auto;padding:24px 28px}
 
-/* PAGES */
 .page{display:none}
 .page.active{display:block}
 
-/* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.card-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+.card-title-text{display:flex;align-items:center;gap:8px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
 
-/* KPI CARDS */
-.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px}
-.kpi-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.kpi-value{font-size:28px;font-weight:700;color:var(--text);line-height:1}
-.kpi-sub{font-size:12px;color:var(--text3);margin-top:6px}
-.kpi-icon{font-size:18px;margin-bottom:8px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px}
+.kpi-top{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.kpi-icon-box{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.kpi-label{font-size:11.5px;color:var(--text2);font-weight:600}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text);line-height:1;letter-spacing:-.01em}
+.kpi-sub{font-size:11.5px;color:var(--text3);margin-top:6px}
+.kpi-sub.positive{color:var(--green)}
 
-/* BADGES */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
-.badge-a{background:var(--greenbg);color:var(--green);border:1px solid #1a4a20}
-.badge-b{background:#0a2a3a;color:#58a6ff;border:1px solid #0d3a52}
-.badge-c{background:var(--amberbg);color:var(--amber);border:1px solid #3a2a0a}
-.badge-d{background:#2a1a0a;color:#e3843a;border:1px solid #3a250a}
-.badge-e{background:var(--redbg);color:var(--red);border:1px solid #3a0a0a}
-.badge-livre{background:var(--greenbg);color:var(--green);border:1px solid #1a4a20}
-.badge-moderado{background:var(--amberbg);color:var(--amber);border:1px solid #3a2a0a}
-.badge-restrito{background:#2a1a0a;color:#e3843a;border:1px solid #3a250a}
-.badge-nao{background:var(--redbg);color:var(--red);border:1px solid #3a0a0a}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge-a{background:var(--greenbg);color:var(--green)}
+.badge-b{background:#0d2438;color:#5da8f5}
+.badge-c{background:var(--amberbg);color:var(--amber)}
+.badge-d{background:var(--orangebg);color:var(--orange)}
+.badge-e{background:var(--redbg);color:var(--red)}
+.badge-livre{background:var(--greenbg);color:var(--green)}
+.badge-moderado{background:var(--amberbg);color:var(--amber)}
+.badge-restrito{background:var(--orangebg);color:var(--orange)}
+.badge-nao{background:var(--redbg);color:var(--red)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-a{background:var(--green)}.dot-b{background:#5da8f5}.dot-c{background:var(--amber)}.dot-d{background:var(--orange)}.dot-e{background:var(--red)}
 
-/* TABLE */
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);font-weight:600}
+th{text-align:left;padding:10px 12px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);font-weight:700}
 td{padding:12px;border-bottom:1px solid var(--border2);color:var(--text);font-size:13px}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
 .td-muted{color:var(--text2)}
 
-/* FORMS */
 .form-group{margin-bottom:16px}
-label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500}
-input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:8px 12px;font-size:13px;transition:border .15s;font-family:inherit}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
+input,select,textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);padding:9px 12px;font-size:13px;transition:border .15s;font-family:inherit}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue)}
-textarea{resize:vertical;min-height:200px;line-height:1.6}
+textarea{resize:vertical;min-height:200px;line-height:1.6;font-family:ui-monospace,monospace;font-size:12.5px}
 select option{background:var(--bg2)}
 
-/* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;font-family:inherit}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--radius);border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;font-family:inherit}
 .btn-primary{background:var(--blue2);color:#fff}
-.btn-primary:hover{background:#1158c7}
+.btn-primary:hover{background:#1d54d6}
 .btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border)}
 .btn-secondary:hover{background:var(--bg4)}
-.btn-danger{background:#2a0a0a;color:var(--red);border:1px solid #3a0a0a}
-.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:var(--redbg);color:var(--red);border:1px solid #3a1420}
+.btn-sm{padding:6px 11px;font-size:12px}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ALERTS */
-.alert{display:flex;gap:10px;padding:12px 16px;border-radius:var(--radius);margin-bottom:12px;font-size:13px}
-.alert-info{background:var(--bluebg);border:1px solid #1f3a6e;color:#58a6ff}
-.alert-warning{background:var(--amberbg);border:1px solid #3a2a0a;color:var(--amber)}
-.alert-danger{background:var(--redbg);border:1px solid #3a0a0a;color:var(--red)}
-.alert-success{background:var(--greenbg);border:1px solid #0a2a15;color:var(--green)}
+.alert{display:flex;gap:10px;padding:12px 16px;border-radius:var(--radius);margin-bottom:10px;font-size:13px;align-items:flex-start}
+.alert-info{background:var(--bluebg);border:1px solid #1f3a6e;color:#7eb0f7}
+.alert-warning{background:var(--amberbg);border:1px solid #4a3a14;color:var(--amber)}
+.alert-danger{background:var(--redbg);border:1px solid #4a1622;color:var(--red)}
+.alert-success{background:var(--greenbg);border:1px solid #134a30;color:var(--green)}
 
-/* SCORE BAR */
-.score-bar{height:8px;border-radius:4px;background:var(--bg4);overflow:hidden;margin:8px 0}
+.score-bar{height:7px;border-radius:4px;background:var(--bg4);overflow:hidden;margin:8px 0}
 .score-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
 
-/* PARECER */
 .parecer-section{background:var(--bg3);border-radius:var(--radius);padding:16px;margin-bottom:12px}
-.parecer-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.parecer-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .parecer-text{font-size:13px;color:var(--text2);line-height:1.7}
+.parecer-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.parecer-list li{font-size:13px;color:var(--text2);line-height:1.5;padding-left:16px;position:relative}
+.parecer-list li::before{content:'—';position:absolute;left:0;color:var(--text3)}
 
-/* LOADING */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;font-size:15px;color:var(--text2)}
 .loading-overlay .spinner{width:32px;height:32px;border-width:3px}
 
-/* TOAST */
 .toast-container{position:fixed;top:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:99999}
-.toast{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;font-size:13px;max-width:320px;animation:slideIn .2s ease;display:flex;align-items:center;gap:10px}
-.toast-success{border-color:#1a4a20;color:var(--green)}
-.toast-error{border-color:#3a0a0a;color:var(--red)}
-.toast-info{border-color:#1f3a6e;color:#58a6ff}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;font-size:13px;max-width:320px;animation:slideIn .2s ease;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.toast-success{border-color:#134a30;color:var(--green)}
+.toast-error{border-color:#4a1622;color:var(--red)}
+.toast-info{border-color:#1f3a6e;color:#7eb0f7}
 @keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:none;opacity:1}}
 
-/* CONFIANÇA GAUGE */
-.gauge-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:4px solid}
+.gauge-circle{width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;border:4px solid}
 .gauge-high{border-color:var(--green);color:var(--green)}
 .gauge-med{border-color:var(--amber);color:var(--amber)}
 .gauge-low{border-color:var(--red);color:var(--red)}
 
-/* SEARCH */
-.search-wrap{position:relative;flex:1;max-width:320px}
-.search-wrap input{padding-left:32px}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px}
+.search-wrap{position:relative;flex:1;max-width:300px}
+.search-wrap input{padding-left:32px;border-radius:20px;background:var(--bg3)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px}
 
-/* HEADER ROW */
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-title{font-size:20px;font-weight:700}
-.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:21px;font-weight:800;letter-spacing:-.01em}
+.page-sub{font-size:13px;color:var(--text2);margin-top:3px}
 
-/* GRUPO ECONOMICO */
 .grupo-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border2)}
 .grupo-item:last-child{border-bottom:none}
-.grupo-dot{width:8px;height:8px;border-radius:50%;background:var(--blue);flex-shrink:0}
+.grupo-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0}
 
-/* EMPTY STATE */
 .empty{text-align:center;padding:48px;color:var(--text3)}
-.empty svg{margin:0 auto 16px;display:block;opacity:.3}
 
-/* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:90%;max-width:720px;max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--border)}
-.modal-title{font-size:16px;font-weight:600}
-.modal-body{padding:20px}
-.modal-footer{padding:16px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:92%;max-width:760px;max-height:88vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:16px;font-weight:700}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
 .close-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px;line-height:1}
 
-/* CHART CONTAINER */
 .chart-container{position:relative;height:200px}
+.chart-container.sm{height:160px}
 
-/* STATUS DOT */
-.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
-.dot-green{background:var(--green)}
-.dot-amber{background:var(--amber)}
-.dot-red{background:var(--red)}
-.dot-blue{background:var(--blue)}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:6px}
+.dot-green{background:var(--green)}.dot-amber{background:var(--amber)}.dot-red{background:var(--red)}.dot-blue{background:var(--blue)}
 
-/* TAG */
-.tag{display:inline-block;padding:2px 6px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;font-size:11px;color:var(--text2);margin:2px}
+.tag{display:inline-block;padding:3px 8px;background:var(--bg4);border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--text2);margin:2px}
 
-/* DIVIDER */
-.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
 
 .gap-8{gap:8px}
-.mt-12{margin-top:12px}
-.mt-16{margin-top:16px}
-.mt-20{margin-top:20px}
-.mb-16{margin-bottom:16px}
-.flex{display:flex}
-.items-center{align-items:center}
-.justify-between{justify-content:space-between}
-.flex-1{flex:1}
-.text-sm{font-size:12px;color:var(--text2)}
-.text-muted{color:var(--text3)}
-.font-bold{font-weight:700}
-.nowrap{white-space:nowrap}
+.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-20{margin-top:20px}.mb-16{margin-bottom:16px}
+.flex{display:flex}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-1{flex:1}
+.text-sm{font-size:12px;color:var(--text2)}.text-muted{color:var(--text3)}.font-bold{font-weight:700}.nowrap{white-space:nowrap}
+
+/* timeline (atividades / decisões) */
+.timeline-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border2)}
+.timeline-item:last-child{border-bottom:none}
+.timeline-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.timeline-content{flex:1}
+.timeline-text{font-size:13px;color:var(--text)}
+.timeline-time{font-size:11.5px;color:var(--text3);margin-top:2px}
+
+/* progress ring for KPI mini sparkline replacement */
+.mini-trend{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+
+@media (max-width:1100px){
+  .grid-5{grid-template-columns:repeat(2,1fr)}
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .grid-6{grid-template-columns:repeat(3,1fr)}
+}
 </style>
 </head>
 <body>
@@ -204,7 +197,6 @@ select option{background:var(--bg2)}
 </div>
 
 <div class="app">
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="logo">
       <div class="logo-icon">RF</div>
@@ -216,47 +208,41 @@ select option{background:var(--bg2)}
     <div class="topbar-right">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="globalSearch" placeholder="Buscar cliente ou CNPJ..." style="border-radius:20px">
+        <input type="text" id="globalSearch" placeholder="Buscar cliente ou CNPJ...">
       </div>
-      <div class="user-badge">👤 Ezequiel Silva · Financeiro</div>
+      <div class="user-badge">
+        <div class="user-avatar">ES</div>
+        <div>Ezequiel Silva<br><span class="text-muted" style="font-size:10.5px">Financeiro</span></div>
+      </div>
     </div>
   </div>
 
   <div class="main">
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-section">Análises</div>
-      <div class="nav-item active" onclick="navigate('dashboard')">
-        <span class="nav-icon">📊</span> Dashboard
-      </div>
-      <div class="nav-item" onclick="navigate('nova-analise')">
-        <span class="nav-icon">➕</span> Nova Análise
-      </div>
-      <div class="nav-item" onclick="navigate('analises')">
-        <span class="nav-icon">📋</span> Análises
-      </div>
-      <div class="nav-item" onclick="navigate('clientes')">
-        <span class="nav-icon">🏢</span> Clientes
-      </div>
+      <div class="nav-item active" onclick="navigate('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="navigate('nova-analise')"><span class="nav-icon">➕</span> Nova Análise</div>
+      <div class="nav-item" onclick="navigate('analises')"><span class="nav-icon">📋</span> Análises</div>
+      <div class="nav-item" onclick="navigate('clientes')"><span class="nav-icon">🏢</span> Clientes</div>
+      <div class="nav-item" onclick="navigate('referencias')"><span class="nav-icon">📞</span> Referências Comerciais</div>
 
-      <div class="sidebar-section" style="margin-top:16px">Gestão</div>
-      <div class="nav-item" onclick="navigate('excecoes')">
-        <span class="nav-icon">⚠️</span> Exceções Comerciais
-      </div>
-      <div class="nav-item" onclick="navigate('negativacoes')">
-        <span class="nav-icon">🚫</span> Negativações
-      </div>
+      <div class="sidebar-section" style="margin-top:14px">Gestão</div>
+      <div class="nav-item" onclick="navigate('excecoes')"><span class="nav-icon">⚠️</span> Exceções Comerciais</div>
+      <div class="nav-item" onclick="navigate('retencoes')"><span class="nav-icon">🔁</span> Retenções</div>
+      <div class="nav-item" onclick="navigate('negativacoes')"><span class="nav-icon">🚫</span> Negativação</div>
+      <div class="nav-item" onclick="navigate('decisoes')"><span class="nav-icon">🗂️</span> Histórico de Decisões</div>
 
-      <div class="sidebar-section" style="margin-top:16px">Indicadores</div>
-      <div class="nav-item" onclick="navigate('carteira')">
-        <span class="nav-icon">💼</span> Carteira de Risco
-      </div>
-      <div class="nav-item" onclick="navigate('auditoria')">
-        <span class="nav-icon">🔒</span> Log de Auditoria
-      </div>
+      <div class="sidebar-section" style="margin-top:14px">Indicadores</div>
+      <div class="nav-item" onclick="navigate('carteira')"><span class="nav-icon">💼</span> Carteira de Risco</div>
+      <div class="nav-item" onclick="navigate('evolucao')"><span class="nav-icon">📈</span> Evolução de Scores</div>
+      <div class="nav-item" onclick="navigate('consultas')"><span class="nav-icon">🔔</span> Consultas e Alertas</div>
+      <div class="nav-item" onclick="navigate('relatorios')"><span class="nav-icon">🧾</span> Relatórios Gerenciais</div>
+
+      <div class="sidebar-section" style="margin-top:14px">Configurações</div>
+      <div class="nav-item" onclick="navigate('parametros')"><span class="nav-icon">🎛️</span> Parâmetros de Crédito</div>
+      <div class="nav-item" onclick="navigate('auditoria')"><span class="nav-icon">🔒</span> Log de Auditoria</div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
 
       <!-- ===================== DASHBOARD ===================== -->
@@ -269,48 +255,118 @@ select option{background:var(--bg2)}
           <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">🔄 Atualizar</button>
         </div>
 
-        <!-- KPIs -->
-        <div class="grid-5 mb-16" id="dashKPIs">
-          <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-label">Clientes Analisados</div><div class="kpi-value" id="kpi-total">—</div></div>
-          <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-label">Aprovados</div><div class="kpi-value" id="kpi-aprovados">—</div></div>
-          <div class="kpi"><div class="kpi-icon">⚠️</div><div class="kpi-label">Com Restrições</div><div class="kpi-value" id="kpi-restricoes">—</div></div>
-          <div class="kpi"><div class="kpi-icon">🚫</div><div class="kpi-label">Não Recomendados</div><div class="kpi-value" id="kpi-nao">—</div></div>
-          <div class="kpi"><div class="kpi-icon">📅</div><div class="kpi-label">Prazo Médio</div><div class="kpi-value" id="kpi-prazo">—</div><div class="kpi-sub">dias sugeridos</div></div>
+        <div class="grid-6 mb-16" id="dashKPIs">
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:var(--bluebg)">📊</div><div class="kpi-label">Clientes Analisados</div></div>
+            <div class="kpi-value" id="kpi-total">—</div>
+            <div class="kpi-sub" id="kpi-total-sub">&nbsp;</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:var(--greenbg)">✅</div><div class="kpi-label">Aprovados</div></div>
+            <div class="kpi-value" id="kpi-aprovados">—</div>
+            <div class="kpi-sub" id="kpi-aprovados-sub">&nbsp;</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:var(--amberbg)">⚠️</div><div class="kpi-label">Com Restrições</div></div>
+            <div class="kpi-value" id="kpi-restricoes">—</div>
+            <div class="kpi-sub" id="kpi-restricoes-sub">&nbsp;</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:var(--redbg)">🚫</div><div class="kpi-label">Não Recomendados</div></div>
+            <div class="kpi-value" id="kpi-nao">—</div>
+            <div class="kpi-sub" id="kpi-nao-sub">&nbsp;</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:var(--purplebg)">🛡️</div><div class="kpi-label">Exceções Comerciais</div></div>
+            <div class="kpi-value" id="kpi-excecoes">—</div>
+            <div class="kpi-sub" id="kpi-excecoes-sub">&nbsp;</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-top"><div class="kpi-icon-box" style="background:#0d2438">📅</div><div class="kpi-label">Prazo Médio Sugerido</div></div>
+            <div class="kpi-value" id="kpi-prazo">—</div>
+            <div class="kpi-sub">dias</div>
+          </div>
+        </div>
+
+        <div class="grid-3 mt-16" id="dashCharts">
+          <div class="card">
+            <div class="card-title"><div class="card-title-text">📈 Distribuição de Risco</div></div>
+            <div class="chart-container sm"><canvas id="riskDonut"></canvas></div>
+            <div id="riskDist" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div class="card-title-text">📉 Evolução dos Scores (Média)</div></div>
+            <div class="chart-container sm"><canvas id="evolScoreChart"></canvas></div>
+            <div class="text-muted" style="font-size:11px;text-align:center;margin-top:8px">Quanto maior o score, menor o risco</div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div class="card-title-text">🔍 Consultas nos Últimos 90 Dias</div></div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
+              <div style="font-size:26px;font-weight:800" id="consultas90Total">—</div>
+              <div class="text-muted" style="font-size:12px">total de consultas</div>
+            </div>
+            <div class="chart-container sm"><canvas id="consultas90Chart"></canvas></div>
+          </div>
         </div>
 
         <div class="grid-2 mt-16">
-          <!-- Distribuição de Risco -->
           <div class="card">
-            <div class="card-title">📈 Distribuição de Risco</div>
-            <div id="riskDist" style="display:flex;flex-direction:column;gap:10px"></div>
-          </div>
-
-          <!-- Últimas Análises -->
-          <div class="card">
-            <div class="card-title">🕐 Últimas Análises</div>
+            <div class="card-title">
+              <div class="card-title-text">🕐 Últimas Análises</div>
+              <a href="#" onclick="navigate('analises');return false" style="font-size:12px">Ver todas →</a>
+            </div>
             <div class="table-wrap">
               <table>
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Classe</th>
-                    <th>Prazo</th>
-                    <th>Data</th>
-                  </tr>
-                </thead>
-                <tbody id="dashAnalises">
-                  <tr><td colspan="4" class="text-muted" style="text-align:center;padding:24px">Carregando...</td></tr>
-                </tbody>
+                <thead><tr><th>Cliente</th><th>Classe</th><th>Prazo</th><th>Data</th></tr></thead>
+                <tbody id="dashAnalises"><tr><td colspan="4" class="text-muted" style="text-align:center;padding:24px">Carregando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">
+              <div class="card-title-text">🚨 Clientes com Maior Risco</div>
+              <a href="#" onclick="navigate('carteira');return false" style="font-size:12px">Ver carteira →</a>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Cliente</th><th>Classe</th><th>Prob. Inad.</th></tr></thead>
+                <tbody id="dashMaiorRisco"><tr><td colspan="3" class="text-muted" style="text-align:center;padding:24px">Carregando...</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- Alertas -->
         <div class="card mt-16">
-          <div class="card-title">🔔 Alertas Inteligentes</div>
-          <div id="dashAlertas">
-            <div class="text-muted" style="padding:16px;text-align:center">Carregando alertas...</div>
+          <div class="card-title">📦 Resumo da Carteira</div>
+          <div class="grid-4" id="resumoCarteira">
+            <div style="text-align:center">
+              <div class="kpi-value" id="rc-valor" style="font-size:20px">—</div>
+              <div class="text-muted" style="font-size:11.5px;margin-top:4px">Valor Total Analisado</div>
+            </div>
+            <div style="text-align:center">
+              <div class="kpi-value" id="rc-limite" style="font-size:20px">—</div>
+              <div class="text-muted" style="font-size:11.5px;margin-top:4px">Limite Total Sugerido</div>
+            </div>
+            <div style="text-align:center">
+              <div class="kpi-value" id="rc-limite-medio" style="font-size:20px">—</div>
+              <div class="text-muted" style="font-size:11.5px;margin-top:4px">Limite Médio por Cliente</div>
+            </div>
+            <div style="text-align:center">
+              <div class="kpi-value" id="rc-maior" style="font-size:20px">—</div>
+              <div class="text-muted" style="font-size:11.5px;margin-top:4px">Maior Limite Sugerido</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 mt-16">
+          <div class="card">
+            <div class="card-title">🔔 Alertas Inteligentes</div>
+            <div id="dashAlertas"><div class="text-muted" style="padding:16px;text-align:center">Carregando alertas...</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🕓 Atividades Recentes</div>
+            <div id="dashAtividades"><div class="text-muted" style="padding:16px;text-align:center">Carregando...</div></div>
           </div>
         </div>
       </div>
@@ -329,17 +385,18 @@ select option{background:var(--bg2)}
             <div class="card-title">📄 Dados do Relatório</div>
             <div class="form-group">
               <label>Texto do Relatório Protector *</label>
-              <textarea id="relatorioTexto" placeholder="Cole aqui o texto completo do relatório Protector / Serasa / Quod...&#10;&#10;Inclua: dados cadastrais, score, protestos, ações, consultas, grupo econômico, sócios...&#10;&#10;Exemplo dos dados já carregados:&#10;METAL TECNICA BOVENAU LTDA&#10;CNPJ: 81.616.765/0003-14&#10;Score: D · 521 pontos&#10;Prob. Inadimplência: 10,43%&#10;Capital Social: R$ 854.843,00&#10;..." style="min-height:340px"></textarea>
+              <textarea id="relatorioTexto" placeholder="Cole aqui o texto completo do relatório Protector / Serasa...&#10;&#10;O motor de análise reconhece automaticamente os campos: Razão Social, Documento, Score, Classe, Pontos, Protestos, Ações, Inadimplências, Sócios, Grupo Econômico..." style="min-height:340px"></textarea>
             </div>
             <div class="form-group">
               <label>Responsável pela Análise</label>
               <input type="text" id="analiseResponsavel" value="Ezequiel Silva">
             </div>
             <div style="display:flex;gap:10px">
-              <button class="btn btn-primary flex-1" onclick="runAnalise()" id="btnAnalise">
-                🤖 Analisar com IA
-              </button>
+              <button class="btn btn-primary flex-1" onclick="runAnalise()" id="btnAnalise">⚙️ Analisar Relatório</button>
               <button class="btn btn-secondary" onclick="preencherExemplo()">📋 Usar Exemplo</button>
+            </div>
+            <div class="text-muted mt-12" style="font-size:11.5px">
+              A análise é feita por um motor de regras determinístico baseado na Política Financeira da Rei-Fix — sem uso de IA generativa, sem custo por análise e sem envio de dados a terceiros.
             </div>
           </div>
 
@@ -347,9 +404,9 @@ select option{background:var(--bg2)}
             <div class="card-title">💡 Resultado da Análise</div>
             <div id="analiseResult">
               <div class="empty">
-                <div style="font-size:48px;margin-bottom:12px">🤖</div>
-                <div>Cole o texto do relatório e clique em<br><strong>Analisar com IA</strong></div>
-                <div class="text-muted mt-12">A IA irá extrair os dados, calcular o score<br>interno e gerar o parecer completo</div>
+                <div style="font-size:48px;margin-bottom:12px">📄</div>
+                <div>Cole o texto do relatório e clique em<br><strong>Analisar Relatório</strong></div>
+                <div class="text-muted mt-12">O motor extrai os dados, aplica os<br>critérios da política financeira e gera o parecer</div>
               </div>
             </div>
           </div>
@@ -359,31 +416,14 @@ select option{background:var(--bg2)}
       <!-- ===================== ANÁLISES ===================== -->
       <div class="page" id="page-analises">
         <div class="page-header">
-          <div>
-            <div class="page-title">Histórico de Análises</div>
-            <div class="page-sub">Todas as análises realizadas</div>
-          </div>
+          <div><div class="page-title">Histórico de Análises</div><div class="page-sub">Todas as análises realizadas</div></div>
           <button class="btn btn-primary btn-sm" onclick="navigate('nova-analise')">➕ Nova Análise</button>
         </div>
-
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Cliente / CNPJ</th>
-                  <th>Score</th>
-                  <th>Classe</th>
-                  <th>Prob. Inad.</th>
-                  <th>Prazo Sugerido</th>
-                  <th>Confiança</th>
-                  <th>Data</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="analisesList">
-                <tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr>
-              </tbody>
+              <thead><tr><th>Cliente / CNPJ</th><th>Score Protector</th><th>Classe</th><th>Prob. Inad.</th><th>Prazo Sugerido</th><th>Confiança</th><th>Data</th><th>Ações</th></tr></thead>
+              <tbody id="analisesList"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -391,30 +431,29 @@ select option{background:var(--bg2)}
 
       <!-- ===================== CLIENTES ===================== -->
       <div class="page" id="page-clientes">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Clientes Cadastrados</div>
-            <div class="page-sub">Base de clientes com histórico de análises</div>
-          </div>
-        </div>
-
+        <div class="page-header"><div><div class="page-title">Clientes Cadastrados</div><div class="page-sub">Base de clientes com histórico de análises</div></div></div>
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Razão Social</th>
-                  <th>CNPJ</th>
-                  <th>Capital Social</th>
-                  <th>CNAE</th>
-                  <th>Status</th>
-                  <th>Cadastrado em</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="clientesList">
-                <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr>
-              </tbody>
+              <thead><tr><th>Razão Social</th><th>CNPJ</th><th>Capital Social</th><th>CNAE</th><th>Status</th><th>Cadastrado em</th><th>Ações</th></tr></thead>
+              <tbody id="clientesList"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== REFERÊNCIAS COMERCIAIS ===================== -->
+      <div class="page" id="page-referencias">
+        <div class="page-header">
+          <div><div class="page-title">Referências Comerciais</div><div class="page-sub">Validação de comportamento do cliente junto a fornecedores</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openReferenciaModal()">➕ Nova Referência</button>
+        </div>
+        <div class="card">
+          <div class="alert alert-info">ℹ️ Recomendado quando há indícios de risco: baixa pontuação, inadimplência, excesso de consultas ou inconsistências cadastrais.</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Fornecedor Consultado</th><th>Tempo de Relacionamento</th><th>Pontualidade</th><th>Classificação</th><th>Data</th></tr></thead>
+              <tbody id="referenciasList"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -423,29 +462,27 @@ select option{background:var(--bg2)}
       <!-- ===================== EXCEÇÕES ===================== -->
       <div class="page" id="page-excecoes">
         <div class="page-header">
-          <div>
-            <div class="page-title">Exceções Comerciais</div>
-            <div class="page-sub">Clientes aprovados pela diretoria com condições especiais</div>
-          </div>
+          <div><div class="page-title">Exceções Comerciais</div><div class="page-sub">Clientes aprovados pela diretoria com condições especiais</div></div>
           <button class="btn btn-primary btn-sm" onclick="openExcecaoModal()">➕ Nova Exceção</button>
         </div>
-
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Motivo</th>
-                  <th>Autorizado por</th>
-                  <th>Validade</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="excecoesList">
-                <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th>Motivo</th><th>Autorizado por</th><th>Validade</th><th>Status</th><th>Ações</th></tr></thead>
+              <tbody id="excecoesList"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== RETENÇÕES ===================== -->
+      <div class="page" id="page-retencoes">
+        <div class="page-header"><div><div class="page-title">Retenções</div><div class="page-sub">Pontuação adicional retida por análise de parâmetros decisórios</div></div></div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Motivo da Retenção</th><th>Parâmetro</th><th>Status</th><th>Data</th></tr></thead>
+              <tbody id="retencoesList"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma retenção registrada</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -453,95 +490,126 @@ select option{background:var(--bg2)}
 
       <!-- ===================== NEGATIVAÇÕES ===================== -->
       <div class="page" id="page-negativacoes">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Controle de Negativações</div>
-            <div class="page-sub">Acompanhamento de inadimplências e cobranças</div>
-          </div>
-        </div>
-
+        <div class="page-header"><div><div class="page-title">Controle de Negativação</div><div class="page-sub">Acompanhamento de inadimplências e cobranças</div></div></div>
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                  <th>Data</th>
-                  <th>Observação</th>
-                </tr>
-              </thead>
-              <tbody id="negativacoesList">
-                <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th>Valor</th><th>Status</th><th>Data</th><th>Observação</th></tr></thead>
+              <tbody id="negativacoesList"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr></tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      <!-- ===================== HISTÓRICO DE DECISÕES ===================== -->
+      <div class="page" id="page-decisoes">
+        <div class="page-header"><div><div class="page-title">Histórico de Decisões</div><div class="page-sub">Decisões tomadas sobre prazos e limites de crédito</div></div></div>
+        <div class="card">
+          <div id="decisoesList"><div class="text-muted" style="text-align:center;padding:32px">Carregando...</div></div>
         </div>
       </div>
 
       <!-- ===================== CARTEIRA ===================== -->
       <div class="page" id="page-carteira">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Inteligência da Carteira</div>
-            <div class="page-sub">Visão consolidada de risco e oportunidades</div>
-          </div>
-        </div>
-
-        <div class="grid-3 mb-16" id="carteiraKPIs">
-          <div class="kpi"><div class="kpi-label">Score Médio da Carteira</div><div class="kpi-value" id="cart-score">—</div></div>
+        <div class="page-header"><div><div class="page-title">Inteligência da Carteira</div><div class="page-sub">Visão consolidada de risco e oportunidades</div></div></div>
+        <div class="grid-3 mb-16">
+          <div class="kpi"><div class="kpi-label">Score Protector Médio</div><div class="kpi-value" id="cart-score">—</div></div>
           <div class="kpi"><div class="kpi-label">Prob. Inadimplência Média</div><div class="kpi-value" id="cart-prob">—</div><div class="kpi-sub">%</div></div>
           <div class="kpi"><div class="kpi-label">Prazo Médio Recomendado</div><div class="kpi-value" id="cart-prazo">—</div><div class="kpi-sub">dias</div></div>
         </div>
-
         <div class="card">
           <div class="card-title">📊 Distribuição por Classe de Risco</div>
-          <div class="chart-container">
-            <canvas id="carteiraChart"></canvas>
-          </div>
+          <div class="chart-container"><canvas id="carteiraChart"></canvas></div>
         </div>
-
         <div class="card mt-16">
           <div class="card-title">🔄 Oportunidades de Revisão</div>
-          <div id="oportunidades">
-            <div class="text-muted" style="padding:16px;text-align:center">Carregando análises...</div>
+          <div id="oportunidades"><div class="text-muted" style="padding:16px;text-align:center">Carregando análises...</div></div>
+        </div>
+      </div>
+
+      <!-- ===================== EVOLUÇÃO DE SCORES ===================== -->
+      <div class="page" id="page-evolucao">
+        <div class="page-header"><div><div class="page-title">Evolução de Scores</div><div class="page-sub">Histórico de score Protector ao longo do tempo</div></div></div>
+        <div class="card">
+          <div class="chart-container"><canvas id="evolucaoFullChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ===================== CONSULTAS E ALERTAS ===================== -->
+      <div class="page" id="page-consultas">
+        <div class="page-header"><div><div class="page-title">Consultas e Alertas</div><div class="page-sub">Volume de consultas e sinais de atenção</div></div></div>
+        <div class="card mb-16">
+          <div class="card-title">🔍 Consultas por Cliente</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Consultas Realizadas</th><th>Nível</th></tr></thead>
+              <tbody id="consultasList"><tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
+            </table>
           </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔔 Todos os Alertas</div>
+          <div id="alertasCompletos"><div class="text-muted" style="padding:16px;text-align:center">Carregando...</div></div>
+        </div>
+      </div>
+
+      <!-- ===================== RELATÓRIOS GERENCIAIS ===================== -->
+      <div class="page" id="page-relatorios">
+        <div class="page-header"><div><div class="page-title">Relatórios Gerenciais</div><div class="page-sub">Exportação de dados consolidados</div></div></div>
+        <div class="card">
+          <div class="empty">
+            <div style="font-size:40px;margin-bottom:12px">🧾</div>
+            <div>Exportação de relatórios em desenvolvimento</div>
+            <div class="text-muted mt-12">Em breve: exportação em PDF/Excel das análises, carteira e auditoria</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================== PARÂMETROS DE CRÉDITO ===================== -->
+      <div class="page" id="page-parametros">
+        <div class="page-header"><div><div class="page-title">Parâmetros de Crédito</div><div class="page-sub">Critérios da Política Financeira aplicados pelo motor de análise</div></div></div>
+        <div class="card mb-16">
+          <div class="card-title">📐 Faixas de Score Protector → Classe</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Faixa de Pontos</th><th>Classe Base</th><th>Prazo Sugerido</th></tr></thead>
+              <tbody>
+                <tr><td>800 – 1000</td><td><span class="badge badge-a">🟢 A</span></td><td>30 dias</td></tr>
+                <tr><td>600 – 799</td><td><span class="badge badge-b">🔵 B</span></td><td>21-28 dias</td></tr>
+                <tr><td>400 – 599</td><td><span class="badge badge-c">🟡 C</span></td><td>14-21 dias</td></tr>
+                <tr><td>0 – 399</td><td><span class="badge badge-d">🟠 D</span></td><td>7 dias</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ Regras de Rebaixamento (sempre conservador)</div>
+          <ul class="parecer-list">
+            <li>1 ocorrência de protesto, ação ou inadimplência → rebaixa 1 classe</li>
+            <li>2 ou mais ocorrências de protesto/ação/inadimplência → Classe E direto</li>
+            <li>Cheque sem fundo identificado → rebaixa 1 classe</li>
+            <li>Probabilidade de inadimplência ≥ 25% → rebaixa 1 classe</li>
+            <li>Situação cadastral diferente de ATIVO → Classe E direto (bloqueio)</li>
+          </ul>
         </div>
       </div>
 
       <!-- ===================== AUDITORIA ===================== -->
       <div class="page" id="page-auditoria">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Log de Auditoria</div>
-            <div class="page-sub">Histórico completo de ações no sistema</div>
-          </div>
-        </div>
-
+        <div class="page-header"><div><div class="page-title">Log de Auditoria</div><div class="page-sub">Histórico completo de ações no sistema</div></div></div>
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Ação</th>
-                  <th>Usuário</th>
-                  <th>Cliente</th>
-                  <th>Detalhes</th>
-                  <th>Data/Hora</th>
-                </tr>
-              </thead>
-              <tbody id="auditLog">
-                <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr>
-              </tbody>
+              <thead><tr><th>Ação</th><th>Usuário</th><th>Cliente</th><th>Detalhes</th><th>Data/Hora</th></tr></thead>
+              <tbody id="auditLog"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /app -->
+    </div>
+  </div>
+</div>
 
 <!-- MODAL DETALHE ANÁLISE -->
 <div class="modal-bg" id="modalAnalise">
@@ -551,9 +619,7 @@ select option{background:var(--bg2)}
       <button class="close-btn" onclick="closeModal('modalAnalise')">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeModal('modalAnalise')">Fechar</button>
-    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalAnalise')">Fechar</button></div>
   </div>
 </div>
 
@@ -565,26 +631,11 @@ select option{background:var(--bg2)}
       <button class="close-btn" onclick="closeModal('modalExcecao')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label>Cliente (CNPJ)</label>
-        <input type="text" id="excCnpj" placeholder="00.000.000/0000-00">
-      </div>
-      <div class="form-group">
-        <label>Motivo</label>
-        <input type="text" id="excMotivo" placeholder="Ex: Cliente estratégico, volume elevado...">
-      </div>
-      <div class="form-group">
-        <label>Autorizado por</label>
-        <input type="text" id="excAutorizado" placeholder="Nome do diretor">
-      </div>
-      <div class="form-group">
-        <label>Validade</label>
-        <input type="date" id="excValidade">
-      </div>
-      <div class="form-group">
-        <label>Observações</label>
-        <textarea id="excObs" style="min-height:100px" placeholder="Detalhes adicionais..."></textarea>
-      </div>
+      <div class="form-group"><label>Cliente (CNPJ)</label><input type="text" id="excCnpj" placeholder="00.000.000/0000-00"></div>
+      <div class="form-group"><label>Motivo</label><input type="text" id="excMotivo" placeholder="Ex: Cliente estratégico, volume elevado..."></div>
+      <div class="form-group"><label>Autorizado por</label><input type="text" id="excAutorizado" placeholder="Nome do diretor"></div>
+      <div class="form-group"><label>Validade</label><input type="date" id="excValidade"></div>
+      <div class="form-group"><label>Observações</label><textarea id="excObs" style="min-height:100px;font-family:inherit;font-size:13px" placeholder="Detalhes adicionais..."></textarea></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modalExcecao')">Cancelar</button>
@@ -593,12 +644,255 @@ select option{background:var(--bg2)}
   </div>
 </div>
 
+<!-- MODAL REFERÊNCIA COMERCIAL -->
+<div class="modal-bg" id="modalReferencia">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nova Referência Comercial</div>
+      <button class="close-btn" onclick="closeModal('modalReferencia')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Cliente (CNPJ)</label><input type="text" id="refCnpj" placeholder="00.000.000/0000-00"></div>
+      <div class="form-group"><label>Fornecedor Consultado</label><input type="text" id="refFornecedor" placeholder="Nome do fornecedor"></div>
+      <div class="form-group"><label>Tempo de Relacionamento</label><input type="text" id="refTempo" placeholder="Ex: 3 anos"></div>
+      <div class="form-group">
+        <label>Pontualidade</label>
+        <select id="refPontualidade">
+          <option value="Paga em dia">Paga em dia</option>
+          <option value="Atrasa ocasionalmente">Atrasa ocasionalmente</option>
+          <option value="Atrasa frequentemente">Atrasa frequentemente</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Classificação</label>
+        <select id="refClassificacao">
+          <option value="Bom">Bom</option>
+          <option value="Médio">Médio</option>
+          <option value="Ruim">Ruim</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Observações</label><textarea id="refObs" style="min-height:80px;font-family:inherit;font-size:13px"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalReferencia')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveReferencia()">💾 Salvar Referência</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ==================== SUPABASE INIT ====================
-const SUPABASE_URL = 'https://fmgbpjvrihegzcrvibqu.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_pvfmrcWL9QIVY6AIEqf3Zw_Rx0KEhr9';
+const SUPABASE_URL = 'https://izvivcgwekzjbvvkcsrz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_EMmnH6sy-M97rLlWEtkmKQ_HWIY2uMj';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ==================== MOTOR DE ANÁLISE — SEM IA, 100% REGRAS ====================
+// Baseado nas faixas oficiais de score Protector definidas no Manual de Política Financeira
+// (0-399 / 400-599 / 600-799 / 800-1000), com rebaixamentos conservadores por restrições reais.
+
+function parseRelatorio(texto) {
+  const get = (regex) => { const m = texto.match(regex); return m ? m[1].trim() : null; };
+  const getNum = (regex) => {
+    const v = get(regex);
+    if (!v) return 0;
+    return parseFloat(v.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+  };
+
+  const razaoSocial = get(/Razão Social:\s*(.+)/i);
+  const cnpj = get(/Documento:\s*([\d]+)/i);
+  const nomeFantasia = get(/Nome Fantasia:\s*(.+)/i);
+  const capitalSocial = getNum(/Valor do Capital Social:\s*R?\$?\s*([\d.,]+)/i);
+  const dataAbertura = get(/Data de Abertura:\s*([\d/]+)/i);
+  const cnae = get(/CNAE:\s*([\d]+)/i);
+  const descricaoCnae = get(/Descrição CNAE:\s*(.+)/i);
+  const statusDocumento = get(/Status Documento:\s*(.+)/i);
+  const numFiliais = getNum(/Número de Filiais:\s*(\d+)/i);
+
+  const inadimplenciasQtd = getNum(/Registros de Inadimplência:\s*(\d+)/i);
+  const inadimplenciasVal = getNum(/Registros de Inadimplência:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const acoesQtd = getNum(/Ações:\s*(\d+)/i);
+  const acoesVal = getNum(/Ações:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const protestosQtd = getNum(/Protestos:\s*(\d+)/i);
+  const protestosVal = getNum(/Protestos:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const chequesSemFundo = getNum(/Cheques Sem Fundos:\s*(\d+)/i);
+  const consultasRealizadas = getNum(/Consultas Realizadas:\s*(\d+)/i);
+
+  const probInadimplencia = getNum(/Probabilidade de Inadimplência:\s*([\d.,]+)\s*%/i);
+  const classeExterna = get(/Classe:\s*([A-E])/i);
+  const matchPontos = texto.match(/SCORE[\s\S]*?Pontos:\s*(\d+)/i);
+  const pontosExternos = matchPontos ? parseInt(matchPontos[1]) : null;
+  const tipoCliente = get(/Tipo:\s*(\w+)/i);
+
+  const socios = [];
+  const sociosRegex = /([A-ZÀ-Ú][A-ZÀ-Ú\s.]+?)\s*-\s*S[OÓ]CIO\s*-\s*([\d.,]+)%/gi;
+  let sm;
+  while ((sm = sociosRegex.exec(texto)) !== null) {
+    socios.push({ nome: sm[1].trim(), percentual: parseFloat(sm[2].replace(',', '.')) });
+  }
+
+  const grupoEconomico = [];
+  const linhaGrupoRegex = /^([A-ZÀ-Ú0-9][A-ZÀ-Ú0-9\s.&-]+?)\s*\((\d{14}|\d{11})\)\s*-\s*(.+)$/;
+  texto.split('\n').forEach(linha => {
+    const gm = linha.trim().match(linhaGrupoRegex);
+    if (gm) grupoEconomico.push({ nome: gm[1].trim(), doc: gm[2], papel: gm[3].trim() });
+  });
+
+  let tempoMercadoAnos = null;
+  if (dataAbertura) {
+    const partes = dataAbertura.split('/').map(Number);
+    const d = partes[0], mo = partes[1], y = partes[2];
+    if (y) {
+      const abertura = new Date(y, (mo || 1) - 1, d || 1);
+      tempoMercadoAnos = (Date.now() - abertura.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+    }
+  }
+
+  return { razaoSocial, cnpj, nomeFantasia, capitalSocial, dataAbertura, cnae, descricaoCnae,
+    statusDocumento, numFiliais, tempoMercadoAnos, inadimplenciasQtd, inadimplenciasVal,
+    acoesQtd, acoesVal, protestosQtd, protestosVal, chequesSemFundo, consultasRealizadas,
+    probInadimplencia, classeExterna, pontosExternos, tipoCliente, socios, grupoEconomico };
+}
+
+function classeBasePorScore(pontos) {
+  if (pontos >= 800) return 'A';
+  if (pontos >= 600) return 'B';
+  if (pontos >= 400) return 'C';
+  return 'D';
+}
+
+const ORDEM_CLASSES = ['A', 'B', 'C', 'D', 'E'];
+function rebaixar(classe, niveis) {
+  const idx = ORDEM_CLASSES.indexOf(classe);
+  return ORDEM_CLASSES[Math.min(ORDEM_CLASSES.length - 1, idx + niveis)];
+}
+
+function calcularClasseEDetalhes(d) {
+  const detalhes = [];
+  if (d.pontosExternos === null || d.pontosExternos === undefined) {
+    detalhes.push({ fator: 'Score Protector não identificado no relatório — classificação conservadora aplicada', impacto: 'Classe E' });
+    return { classe: 'E', pontosExternos: null, detalhes };
+  }
+  let classe = classeBasePorScore(d.pontosExternos);
+  detalhes.push({ fator: `Score Protector: ${d.pontosExternos} pontos (faixa oficial do manual)`, impacto: `Classe base ${classe}` });
+
+  if (d.statusDocumento && d.statusDocumento.toUpperCase() !== 'ATIVO') {
+    detalhes.push({ fator: `Situação cadastral: ${d.statusDocumento} (não ativa)`, impacto: 'Classe E — bloqueio' });
+    return { classe: 'E', pontosExternos: d.pontosExternos, detalhes };
+  }
+
+  const totalRestricoes = d.protestosQtd + d.acoesQtd + d.inadimplenciasQtd;
+  if (totalRestricoes >= 2) {
+    detalhes.push({ fator: `${totalRestricoes} ocorrências de protesto/ação/inadimplência`, impacto: 'Classe E — múltiplas restrições' });
+    classe = 'E';
+  } else if (totalRestricoes === 1) {
+    const antes = classe; classe = rebaixar(classe, 1);
+    detalhes.push({ fator: `1 ocorrência de protesto/ação/inadimplência`, impacto: `Rebaixado de ${antes} para ${classe}` });
+  } else {
+    detalhes.push({ fator: 'Ausência de protestos, ações e inadimplências', impacto: 'Sem rebaixamento' });
+  }
+
+  if (d.chequesSemFundo > 0) {
+    const antes = classe; classe = rebaixar(classe, 1);
+    detalhes.push({ fator: `${d.chequesSemFundo} cheque(s) sem fundo`, impacto: `Rebaixado de ${antes} para ${classe}` });
+  }
+  if (d.probInadimplencia >= 25) {
+    const antes = classe; classe = rebaixar(classe, 1);
+    detalhes.push({ fator: `Probabilidade de inadimplência crítica (${d.probInadimplencia.toFixed(2)}%)`, impacto: `Rebaixado de ${antes} para ${classe}` });
+  }
+  return { classe, pontosExternos: d.pontosExternos, detalhes };
+}
+
+function calcularPrazo(classe) {
+  const mapa = {
+    A: { texto: '30 dias', dias: 30 }, B: { texto: '21-28 dias', dias: 25 },
+    C: { texto: '14-21 dias', dias: 18 }, D: { texto: '7 dias', dias: 7 }, E: { texto: 'À vista', dias: 0 }
+  };
+  return mapa[classe] || mapa.E;
+}
+
+function calcularConfianca(d) {
+  let preenchidos = 0; const total = 8;
+  if (d.razaoSocial) preenchidos++;
+  if (d.cnpj) preenchidos++;
+  if (d.capitalSocial > 0) preenchidos++;
+  if (d.dataAbertura) preenchidos++;
+  if (d.probInadimplencia > 0) preenchidos++;
+  if (d.consultasRealizadas >= 0) preenchidos++;
+  if (d.socios.length > 0) preenchidos++;
+  if (d.statusDocumento) preenchidos++;
+  const pct = Math.round((preenchidos / total) * 100);
+  if (pct >= 90) return { nivel: 'Alta', pct };
+  if (pct >= 60) return { nivel: 'Média', pct };
+  return { nivel: 'Baixa', pct };
+}
+
+function gerarParecer(d, pontosExternos, classe, prazo) {
+  const pontosPositivos = [], pontosAtencao = [], riscos = [];
+
+  if (d.protestosQtd === 0 && d.acoesQtd === 0 && d.inadimplenciasQtd === 0)
+    pontosPositivos.push('Ausência de protestos, ações judiciais e registros de inadimplência.');
+  if (d.capitalSocial >= 500000)
+    pontosPositivos.push(`Capital social elevado (R$ ${d.capitalSocial.toLocaleString('pt-BR', {minimumFractionDigits:2})}).`);
+  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos >= 10)
+    pontosPositivos.push(`Empresa consolidada no mercado há aproximadamente ${Math.floor(d.tempoMercadoAnos)} anos.`);
+  if (d.grupoEconomico.length > 0)
+    pontosPositivos.push(`Vinculada a grupo econômico identificado (${d.grupoEconomico.length} empresa(s) relacionada(s)).`);
+  if (d.statusDocumento && d.statusDocumento.toUpperCase() === 'ATIVO')
+    pontosPositivos.push('Situação cadastral do CNPJ ativa.');
+
+  if (d.probInadimplencia >= 8 && d.probInadimplencia < 20)
+    pontosAtencao.push(`Probabilidade de inadimplência em nível de atenção (${d.probInadimplencia.toFixed(2)}%).`);
+  if (d.consultasRealizadas > 50)
+    pontosAtencao.push(`Volume elevado de consultas recentes ao CNPJ (${d.consultasRealizadas}), pode indicar busca ativa por crédito em múltiplas fontes.`);
+  if (d.tipoCliente === 'NOVO')
+    pontosAtencao.push('Cliente novo, sem histórico de relacionamento prévio com a Rei-Fix.');
+  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos < 5 && d.tempoMercadoAnos >= 2)
+    pontosAtencao.push('Tempo de mercado ainda limitado (entre 2 e 5 anos).');
+
+  if (d.protestosQtd > 0) riscos.push(`${d.protestosQtd} protesto(s) registrado(s), totalizando R$ ${d.protestosVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}.`);
+  if (d.acoesQtd > 0) riscos.push(`${d.acoesQtd} ação(ões) judicial(is) registrada(s).`);
+  if (d.inadimplenciasQtd > 0) riscos.push(`${d.inadimplenciasQtd} registro(s) de inadimplência, totalizando R$ ${d.inadimplenciasVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}.`);
+  if (d.chequesSemFundo > 0) riscos.push(`${d.chequesSemFundo} cheque(s) sem fundo identificado(s).`);
+  if (d.probInadimplencia >= 20) riscos.push(`Probabilidade de inadimplência crítica (${d.probInadimplencia.toFixed(2)}%).`);
+  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos < 2) riscos.push('Empresa recém-aberta (menos de 2 anos), histórico insuficiente para avaliação robusta.');
+
+  if (pontosPositivos.length === 0) pontosPositivos.push('Nenhum ponto positivo de destaque identificado nos dados informados.');
+  if (pontosAtencao.length === 0) pontosAtencao.push('Nenhum ponto de atenção relevante identificado.');
+  if (riscos.length === 0) riscos.push('Nenhum risco direto identificado nos registros consultados.');
+
+  const resumoExecutivo = `${d.razaoSocial || 'A empresa analisada'} apresenta score Protector de ${pontosExternos != null ? pontosExternos : 'não identificado'} pontos, classificada como Classe ${classe} conforme critérios da política financeira da Rei-Fix. ` +
+    `Sugere-se prazo de pagamento de ${prazo.texto}. ` +
+    (classe === 'A' || classe === 'B' ? 'O perfil de crédito apresentado é favorável.' :
+     classe === 'C' ? 'O perfil de crédito apresentado é moderado, recomenda-se acompanhamento.' :
+     'O perfil de crédito apresentado exige cautela na concessão de prazo.');
+
+  return { resumoExecutivo, pontosPositivos, pontosAtencao, riscos };
+}
+
+function analisarRelatorio(texto) {
+  const d = parseRelatorio(texto);
+  if (!d.razaoSocial || !d.cnpj) {
+    throw new Error('Não foi possível identificar Razão Social ou Documento (CNPJ) no texto. Verifique se o relatório está no formato esperado.');
+  }
+  const { classe, pontosExternos, detalhes } = calcularClasseEDetalhes(d);
+  const prazo = calcularPrazo(classe);
+  const confianca = calcularConfianca(d);
+  const parecer = gerarParecer(d, pontosExternos, classe, prazo);
+
+  return {
+    razao_social: d.razaoSocial, cnpj: d.cnpj, nome_fantasia: d.nomeFantasia,
+    capital_social: d.capitalSocial, data_abertura: d.dataAbertura, status_documento: d.statusDocumento,
+    score_protector: pontosExternos, classe_protector: d.classeExterna, classe_interna: classe,
+    prazo_sugerido: prazo.texto, prazo_dias: prazo.dias, confianca: confianca.nivel, confianca_pct: confianca.pct,
+    probabilidade_inadimplencia: d.probInadimplencia, protestos: d.protestosQtd, acoes: d.acoesQtd,
+    inadimplencias: d.inadimplenciasQtd, cheques_sem_fundo: d.chequesSemFundo, consultas_realizadas: d.consultasRealizadas,
+    socios: d.socios, grupo_economico: d.grupoEconomico, detalhes_classificacao: detalhes,
+    resumo_executivo: parecer.resumoExecutivo, pontos_positivos: parecer.pontosPositivos,
+    pontos_atencao: parecer.pontosAtencao, riscos_identificados: parecer.riscos,
+    cnae: d.cnae, descricao_cnae: d.descricaoCnae, numero_filiais: d.numFiliais
+  };
+}
 
 // ==================== NAVIGATION ====================
 function navigate(page) {
@@ -606,20 +900,18 @@ function navigate(page) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n => {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) {
-      n.classList.add('active');
-    }
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + page + "'")) n.classList.add('active');
   });
-  if (page === 'dashboard') loadDashboard();
-  if (page === 'analises') loadAnalises();
-  if (page === 'clientes') loadClientes();
-  if (page === 'excecoes') loadExcecoes();
-  if (page === 'negativacoes') loadNegativacoes();
-  if (page === 'carteira') loadCarteira();
-  if (page === 'auditoria') loadAuditoria();
+  const loaders = {
+    dashboard: loadDashboard, analises: loadAnalises, clientes: loadClientes,
+    excecoes: loadExcecoes, negativacoes: loadNegativacoes, carteira: loadCarteira,
+    auditoria: loadAuditoria, referencias: loadReferencias, retencoes: loadRetencoes,
+    decisoes: loadDecisoes, evolucao: loadEvolucaoFull, consultas: loadConsultasEAlertas
+  };
+  if (loaders[page]) loaders[page]();
 }
 
-// ==================== TOAST ====================
+// ==================== TOAST / LOADING ====================
 function toast(msg, type = 'info') {
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
@@ -628,30 +920,25 @@ function toast(msg, type = 'info') {
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(() => el.remove(), 4000);
 }
-
 function loading(show, msg = 'Processando...') {
   document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
   document.getElementById('loadingMsg').textContent = msg;
 }
 
 // ==================== HELPERS ====================
-function fmtDate(d) {
-  if (!d) return '—';
-  return new Date(d).toLocaleDateString('pt-BR');
-}
-function fmtDateTime(d) {
-  if (!d) return '—';
-  return new Date(d).toLocaleString('pt-BR');
-}
-function fmtBRL(v) {
-  if (!v) return '—';
-  return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-}
+function fmtDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('pt-BR'); }
+function fmtDateTime(d) { if (!d) return '—'; return new Date(d).toLocaleString('pt-BR'); }
+function fmtBRL(v) { if (!v) return '—'; return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 function classBadge(c) {
-  if (!c) return '';
+  if (!c) return '—';
   const map = { A: 'badge-a', B: 'badge-b', C: 'badge-c', D: 'badge-d', E: 'badge-e' };
   const labels = { A: '🟢 A — Muito Baixo', B: '🔵 B — Baixo', C: '🟡 C — Moderado', D: '🟠 D — Alto', E: '🔴 E — Crítico' };
   return `<span class="badge ${map[c]||'badge-e'}">${labels[c]||c}</span>`;
+}
+function classBadgeShort(c) {
+  if (!c) return '—';
+  const map = { A: 'badge-a', B: 'badge-b', C: 'badge-c', D: 'badge-d', E: 'badge-e' };
+  return `<span class="badge ${map[c]||'badge-e'}">${c}</span>`;
 }
 function recBadge(r) {
   if (!r) return '—';
@@ -660,32 +947,38 @@ function recBadge(r) {
   if (r.includes('7')) return `<span class="badge badge-restrito">${r}</span>`;
   return `<span class="badge badge-nao">${r}</span>`;
 }
-function scoreBar(score, max = 1000) {
-  const pct = Math.round((score / max) * 100);
-  const color = score >= 700 ? 'var(--green)' : score >= 500 ? 'var(--amber)' : score >= 300 ? '#e3843a' : 'var(--red)';
-  return `<div class="score-bar"><div class="score-bar-fill" style="width:${pct}%;background:${color}"></div></div>`;
+function confGauge(nivel) {
+  if (!nivel) return '';
+  const cls = nivel === 'Alta' ? 'gauge-high' : nivel === 'Média' ? 'gauge-med' : 'gauge-low';
+  return `<div class="gauge-circle ${cls}"><div style="font-size:13px;font-weight:700">${nivel}</div></div>`;
 }
-function confGauge(c) {
-  if (!c) return '';
-  const cls = c >= 70 ? 'gauge-high' : c >= 40 ? 'gauge-med' : 'gauge-low';
-  const label = c >= 70 ? 'Alta' : c >= 40 ? 'Média' : 'Baixa';
-  return `<div class="gauge-circle ${cls}"><div style="font-size:18px;font-weight:700">${c}%</div><div style="font-size:10px">${label}</div></div>`;
+function limiteSugerido(a) {
+  // ESTIMATIVA NÃO OFICIAL — o Manual de Política Financeira não define fórmula de limite de crédito.
+  // Esta é apenas uma heurística de exibição (capital social × fator por classe) até que a Rei-Fix
+  // defina a regra real. Tratar como referência aproximada, não como decisão de crédito.
+  const fatorClasse = { A: 0.05, B: 0.035, C: 0.02, D: 0.01, E: 0 };
+  const capital = a.capital_social || 0;
+  return Math.round(capital * (fatorClasse[a.classe_interna] ?? 0));
 }
 
 // ==================== DASHBOARD ====================
+let riskDonutChart = null, evolScoreChartInst = null, consultas90ChartInst = null;
+
 async function loadDashboard() {
   document.getElementById('dashDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-  const { data: analises } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false });
+  const { data: analises } = await db.from('analises').select('*, clientes(razao_social, capital_social)').order('created_at', { ascending: false });
+  const { data: excecoes } = await db.from('excecoes_comerciais').select('*').eq('ativo', true);
 
   if (!analises || analises.length === 0) {
-    document.getElementById('kpi-total').textContent = '0';
-    document.getElementById('kpi-aprovados').textContent = '0';
-    document.getElementById('kpi-restricoes').textContent = '0';
-    document.getElementById('kpi-nao').textContent = '0';
+    ['kpi-total','kpi-aprovados','kpi-restricoes','kpi-nao','kpi-excecoes'].forEach(id => document.getElementById(id).textContent = '0');
     document.getElementById('kpi-prazo').textContent = '—';
     document.getElementById('dashAnalises').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text3)">Nenhuma análise ainda. <a href="#" onclick="navigate(\'nova-analise\')">Criar primeira análise →</a></td></tr>';
+    document.getElementById('dashMaiorRisco').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3)">Sem dados</td></tr>';
     document.getElementById('dashAlertas').innerHTML = '<div class="alert alert-info">Nenhum alerta. Comece adicionando análises.</div>';
+    document.getElementById('dashAtividades').innerHTML = '<div class="text-muted" style="padding:16px;text-align:center">Sem atividades</div>';
+    document.getElementById('consultas90Total').textContent = '0';
+    ['rc-valor','rc-limite','rc-limite-medio','rc-maior'].forEach(id => document.getElementById(id).textContent = 'R$ 0,00');
     renderRiskDist([]);
     return;
   }
@@ -694,77 +987,162 @@ async function loadDashboard() {
   const aprovados = analises.filter(a => ['A','B'].includes(a.classe_interna)).length;
   const restricoes = analises.filter(a => a.classe_interna === 'C').length;
   const nao = analises.filter(a => ['D','E'].includes(a.classe_interna)).length;
-
-  const prazos = analises.map(a => {
-    const p = a.prazo_sugerido || '';
-    const m = p.match(/(\d+)/);
-    return m ? parseInt(m[1]) : null;
-  }).filter(Boolean);
+  const prazos = analises.map(a => a.prazo_dias).filter(p => p !== null && p !== undefined);
   const prazoMed = prazos.length ? Math.round(prazos.reduce((a,b) => a+b, 0) / prazos.length) : null;
 
   document.getElementById('kpi-total').textContent = total;
   document.getElementById('kpi-aprovados').textContent = aprovados;
+  document.getElementById('kpi-aprovados-sub').textContent = total ? Math.round(aprovados/total*100) + '% do total' : '';
   document.getElementById('kpi-restricoes').textContent = restricoes;
+  document.getElementById('kpi-restricoes-sub').textContent = total ? Math.round(restricoes/total*100) + '% do total' : '';
   document.getElementById('kpi-nao').textContent = nao;
-  document.getElementById('kpi-prazo').textContent = prazoMed ? prazoMed : '—';
+  document.getElementById('kpi-nao-sub').textContent = total ? Math.round(nao/total*100) + '% do total' : '';
+  document.getElementById('kpi-excecoes').textContent = excecoes ? excecoes.length : 0;
+  document.getElementById('kpi-prazo').textContent = prazoMed ?? '—';
 
-  // Últimas 5
-  const recentes = analises.slice(0, 5);
+  const recentes = analises.slice(0, 6);
   document.getElementById('dashAnalises').innerHTML = recentes.map(a => `
-    <tr onclick="openAnaliseModal(${JSON.stringify(a).replace(/"/g,'&quot;')})" style="cursor:pointer">
+    <tr onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})' style="cursor:pointer">
       <td><strong>${a.clientes?.razao_social || a.cnpj}</strong><br><span class="text-muted">${a.cnpj}</span></td>
-      <td>${classBadge(a.classe_interna)}</td>
+      <td>${classBadgeShort(a.classe_interna)}</td>
       <td>${recBadge(a.prazo_sugerido)}</td>
-      <td class="text-muted nowrap">${fmtDate(a.data_analise)}</td>
+      <td class="text-muted nowrap">${fmtDate(a.data_analise || a.created_at)}</td>
     </tr>
   `).join('');
 
+  const maiorRisco = [...analises].filter(a => ['D','E'].includes(a.classe_interna))
+    .sort((a,b) => (b.probabilidade_inadimplencia||0) - (a.probabilidade_inadimplencia||0)).slice(0, 6);
+  document.getElementById('dashMaiorRisco').innerHTML = maiorRisco.length ? maiorRisco.map(a => `
+    <tr>
+      <td><strong>${a.clientes?.razao_social || a.cnpj}</strong></td>
+      <td>${classBadgeShort(a.classe_interna)}</td>
+      <td style="color:var(--red);font-weight:700">${a.probabilidade_inadimplencia || '—'}%</td>
+    </tr>
+  `).join('') : '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3)">Nenhum cliente de alto risco</td></tr>';
+
+  // Resumo da carteira
+  const valorTotal = analises.reduce((s,a) => s + (a.clientes?.capital_social || 0), 0);
+  const limites = analises.map(a => limiteSugerido({ classe_interna: a.classe_interna, capital_social: a.clientes?.capital_social || 0 }));
+  const limiteTotal = limites.reduce((s,l) => s+l, 0);
+  const limiteMedio = limites.length ? limiteTotal / limites.length : 0;
+  const maiorLimite = limites.length ? Math.max(...limites) : 0;
+  document.getElementById('rc-valor').textContent = fmtBRL(valorTotal);
+  document.getElementById('rc-limite').textContent = fmtBRL(limiteTotal);
+  document.getElementById('rc-limite-medio').textContent = fmtBRL(limiteMedio);
+  document.getElementById('rc-maior').textContent = fmtBRL(maiorLimite);
+
+  // Consultas 90 dias (soma das análises com data nos últimos 90 dias)
+  const noventaDias = new Date(); noventaDias.setDate(noventaDias.getDate() - 90);
+  const recentes90 = analises.filter(a => new Date(a.created_at) >= noventaDias);
+  const totalConsultas90 = recentes90.reduce((s,a) => s + (a.consultas_realizadas || 0), 0);
+  document.getElementById('consultas90Total').textContent = totalConsultas90;
+
   renderRiskDist(analises);
   renderAlertas(analises);
+  renderAtividades(analises);
+  renderEvolScoreChart(analises);
+  renderConsultas90Chart(analises);
 }
 
 function renderRiskDist(analises) {
   const classes = ['A','B','C','D','E'];
   const labels = { A:'Muito Baixo (A)', B:'Baixo (B)', C:'Moderado (C)', D:'Alto (D)', E:'Crítico (E)' };
-  const colors = { A:'var(--green)', B:'#58a6ff', C:'var(--amber)', D:'#e3843a', E:'var(--red)' };
-  const counts = {};
-  classes.forEach(c => counts[c] = analises.filter(a => a.classe_interna === c).length);
+  const colors = { A:'#33c481', B:'#5da8f5', C:'#e0a83a', D:'#e8854a', E:'#f0556a' };
+  const counts = {}; classes.forEach(c => counts[c] = analises.filter(a => a.classe_interna === c).length);
   const total = analises.length || 1;
 
   document.getElementById('riskDist').innerHTML = classes.map(c => `
     <div>
-      <div class="flex justify-between" style="margin-bottom:4px">
-        <span style="font-size:12px;color:var(--text2)">${labels[c]}</span>
-        <span style="font-size:12px;font-weight:600">${counts[c]} <span class="text-muted">(${Math.round(counts[c]/total*100)}%)</span></span>
+      <div class="flex justify-between" style="margin-bottom:3px">
+        <span style="font-size:11.5px;color:var(--text2)">${labels[c]}</span>
+        <span style="font-size:11.5px;font-weight:700">${counts[c]} <span class="text-muted">(${Math.round(counts[c]/total*100)}%)</span></span>
       </div>
-      <div class="score-bar">
-        <div class="score-bar-fill" style="width:${Math.round(counts[c]/total*100)}%;background:${colors[c]}"></div>
-      </div>
+      <div class="score-bar"><div class="score-bar-fill" style="width:${Math.round(counts[c]/total*100)}%;background:${colors[c]}"></div></div>
     </div>
   `).join('');
+
+  if (riskDonutChart) riskDonutChart.destroy();
+  const ctx = document.getElementById('riskDonut').getContext('2d');
+  riskDonutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: classes.map(c=>labels[c]), datasets: [{ data: classes.map(c=>counts[c]), backgroundColor: classes.map(c=>colors[c]), borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, cutout: '68%' }
+  });
 }
 
 function renderAlertas(analises) {
   const alertas = [];
   analises.forEach(a => {
     const nome = a.clientes?.razao_social || a.cnpj;
-    if ((a.consultas_realizadas || 0) > 30) alertas.push({ tipo:'warning', msg: `Alto volume de consultas (${a.consultas_realizadas}): ${nome}` });
-    if ((a.probabilidade_inadimplencia || 0) > 20) alertas.push({ tipo:'danger', msg: `Probabilidade de inadimplência elevada (${a.probabilidade_inadimplencia}%): ${nome}` });
-    if (['D','E'].includes(a.classe_interna)) alertas.push({ tipo:'warning', msg: `Risco ${a.classe_interna === 'E' ? 'crítico' : 'alto'}: ${nome} — Atenção ao prazo concedido` });
+    if ((a.consultas_realizadas || 0) > 30) alertas.push({ tipo:'warning', msg: `Alto volume de consultas (${a.consultas_realizadas}): ${nome}`, data: a.created_at });
+    if ((a.probabilidade_inadimplencia || 0) > 20) alertas.push({ tipo:'danger', msg: `Probabilidade de inadimplência elevada (${a.probabilidade_inadimplencia}%): ${nome}`, data: a.created_at });
+    if (['D','E'].includes(a.classe_interna)) alertas.push({ tipo:'warning', msg: `Risco ${a.classe_interna === 'E' ? 'crítico' : 'alto'}: ${nome} — Atenção ao prazo concedido`, data: a.created_at });
   });
-
   if (alertas.length === 0) {
     document.getElementById('dashAlertas').innerHTML = '<div class="alert alert-success">Nenhum alerta crítico na carteira atual.</div>';
     return;
   }
-
   const shown = alertas.slice(0, 5);
-  document.getElementById('dashAlertas').innerHTML = shown.map(a =>
-    `<div class="alert alert-${a.tipo}">⚠️ ${a.msg}</div>`
-  ).join('') + (alertas.length > 5 ? `<div class="text-muted" style="padding:8px">+ ${alertas.length - 5} alertas adicionais</div>` : '');
+  document.getElementById('dashAlertas').innerHTML = shown.map(a => `<div class="alert alert-${a.tipo}">⚠️ ${a.msg}</div>`).join('') +
+    (alertas.length > 5 ? `<div class="text-muted" style="padding:8px">+ ${alertas.length - 5} alertas adicionais — <a href="#" onclick="navigate('consultas');return false">ver todos →</a></div>` : '');
 }
 
-// ==================== ANÁLISE COM IA ====================
+function renderAtividades(analises) {
+  const recentes = analises.slice(0, 6);
+  document.getElementById('dashAtividades').innerHTML = recentes.length ? recentes.map(a => `
+    <div class="timeline-item">
+      <div class="timeline-dot dot-blue"></div>
+      <div class="timeline-content">
+        <div class="timeline-text">Análise concluída para <strong>${a.clientes?.razao_social || a.cnpj}</strong></div>
+        <div class="timeline-time">${fmtDateTime(a.created_at)}</div>
+      </div>
+    </div>
+  `).join('') : '<div class="text-muted" style="padding:16px;text-align:center">Sem atividades recentes</div>';
+}
+
+function renderEvolScoreChart(analises) {
+  const porMes = {};
+  analises.forEach(a => {
+    if (!a.score_protector) return;
+    const d = new Date(a.created_at);
+    const key = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    if (!porMes[key]) porMes[key] = [];
+    porMes[key].push(a.score_protector);
+  });
+  const labels = Object.keys(porMes).slice(-6);
+  const valores = labels.map(k => Math.round(porMes[k].reduce((a,b)=>a+b,0)/porMes[k].length));
+
+  if (evolScoreChartInst) evolScoreChartInst.destroy();
+  const ctx = document.getElementById('evolScoreChart').getContext('2d');
+  evolScoreChartInst = new Chart(ctx, {
+    type: 'line',
+    data: { labels: labels.length ? labels : ['—'], datasets: [{ data: valores.length ? valores : [0], borderColor: '#4d8ef5', backgroundColor: 'rgba(77,142,245,.1)', fill: true, tension: .35, pointRadius: 3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { display: false } }, y: { min:0, max:1000, ticks: { color: '#8d97ab', font:{size:10} }, grid: { color: '#1a2030' } } } }
+  });
+}
+
+function renderConsultas90Chart(analises) {
+  const porMes = {};
+  analises.forEach(a => {
+    const d = new Date(a.created_at);
+    const key = d.toLocaleDateString('pt-BR', { month: 'short' });
+    porMes[key] = (porMes[key] || 0) + (a.consultas_realizadas || 0);
+  });
+  const labels = Object.keys(porMes).slice(-3);
+  const valores = labels.map(k => porMes[k]);
+
+  if (consultas90ChartInst) consultas90ChartInst.destroy();
+  const ctx = document.getElementById('consultas90Chart').getContext('2d');
+  consultas90ChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: labels.length ? labels : ['—'], datasets: [{ data: valores.length ? valores : [0], backgroundColor: '#9b7cf0', borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { display: false } }, y: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { color: '#1a2030' } } } }
+  });
+}
+
+// ==================== NOVA ANÁLISE (MOTOR DE REGRAS — SEM IA) ====================
 const EXEMPLO = `ANALÍTICA - PJ
 
 DADOS CADASTRAIS
@@ -808,7 +1186,7 @@ RIOSUL TOOLS COMERCIAL E IMPORTADORA LTDA (16777515000132) - Sócio
 
 function preencherExemplo() {
   document.getElementById('relatorioTexto').value = EXEMPLO;
-  toast('Exemplo carregado. Clique em Analisar com IA.', 'info');
+  toast('Exemplo carregado. Clique em Analisar Relatório.', 'info');
 }
 
 async function runAnalise() {
@@ -820,107 +1198,32 @@ async function runAnalise() {
     return;
   }
 
-  loading(true, 'Analisando com IA...');
-  document.getElementById('analiseResult').innerHTML = '<div style="text-align:center;padding:48px"><div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 16px"></div><div class="text-muted">A IA está lendo e interpretando o relatório...</div></div>';
+  document.getElementById('analiseResult').innerHTML = '<div style="text-align:center;padding:48px"><div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 16px"></div><div class="text-muted">Processando relatório...</div></div>';
 
   try {
-    const prompt = `Você é um analista de crédito B2B especialista. Analise o relatório abaixo e retorne APENAS um JSON válido sem markdown, sem blocos de código, apenas o objeto JSON puro.
-
-RELATÓRIO:
-${texto}
-
-Retorne exatamente este JSON (sem markdown, sem \`\`\`json):
-{
-  "razao_social": "string",
-  "cnpj": "apenas digitos",
-  "data_abertura": "YYYY-MM-DD ou null",
-  "capital_social": numero ou null,
-  "cnae": "string",
-  "descricao_cnae": "string",
-  "status_receita": "ATIVO ou INATIVO",
-  "numero_filiais": numero,
-  "score_protector": numero ou null,
-  "classe_protector": "A/B/C/D/E/F",
-  "probabilidade_inadimplencia": numero com casas decimais ou null,
-  "protestos": numero,
-  "acoes": numero,
-  "inadimplencias": numero,
-  "cheques_sem_fundo": numero,
-  "consultas_realizadas": numero,
-  "socios": [{"nome":"string","participacao":"string","tipo":"string"}],
-  "score_interno": numero entre 0-1000,
-  "classe_interna": "A/B/C/D/E",
-  "prazo_sugerido": "À vista / 7 dias / 14 dias / 21 dias / 28 dias / 30 dias",
-  "confianca": numero 0-100,
-  "pontos_positivos": "texto detalhado com bullets usando \\n- ",
-  "pontos_atencao": "texto detalhado com bullets usando \\n- ",
-  "riscos_identificados": "texto detalhado com bullets usando \\n- ",
-  "parecer_completo": "parecer executivo completo em 3-4 frases"
-}
-
-REGRAS DO SCORE INTERNO:
-900-1000 = Classe A (Muito Baixo Risco)
-700-899 = Classe B (Baixo Risco)
-500-699 = Classe C (Risco Moderado)
-300-499 = Classe D (Risco Alto)
-0-299 = Classe E (Risco Crítico)
-
-O prazo sugerido deve seguir:
-A = 30 dias, B = 21-28 dias, C = 14-21 dias, D = 7 dias, E = À vista
-
-Considere positivamente: ausência de protestos, ações e inadimplências, capital social alto, tempo de mercado, grupo econômico sólido.
-Considere negativamente: score baixo, probabilidade alta de inadimplência, muitas consultas recentes, empresa nova.`;
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    const data = await resp.json();
-    if (!data.content || !data.content[0]) throw new Error('Resposta inválida da IA');
-
-    let raw = data.content[0].text.trim();
-    raw = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const parsed = JSON.parse(raw);
-
-    // Salvar no Supabase
+    const parsed = analisarRelatorio(texto);
     await salvarAnalise(parsed, texto, responsavel);
     renderResultado(parsed);
-    loading(false);
     toast('Análise concluída e salva com sucesso!', 'success');
-
   } catch(e) {
-    loading(false);
     console.error(e);
     toast('Erro na análise: ' + e.message, 'error');
-    document.getElementById('analiseResult').innerHTML = `<div class="alert alert-danger">❌ Erro: ${e.message}<br><br>Verifique se o texto está correto e tente novamente.</div>`;
+    document.getElementById('analiseResult').innerHTML = `<div class="alert alert-danger">❌ ${e.message}</div>`;
   }
 }
 
 async function salvarAnalise(parsed, textoOriginal, responsavel) {
   const cnpj = (parsed.cnpj || '').replace(/\D/g, '');
-
-  // Upsert cliente
   const clienteData = {
-    razao_social: parsed.razao_social || 'Desconhecido',
-    cnpj,
-    data_abertura: parsed.data_abertura || null,
-    capital_social: parsed.capital_social || null,
-    cnae: parsed.cnae || null,
-    descricao_cnae: parsed.descricao_cnae || null,
-    status_receita: parsed.status_receita || 'ATIVO',
-    numero_filiais: parsed.numero_filiais || 0,
-    socios: parsed.socios || []
+    razao_social: parsed.razao_social || 'Desconhecido', cnpj,
+    data_abertura: parsed.data_abertura ? converterDataBR(parsed.data_abertura) : null,
+    capital_social: parsed.capital_social || null, cnae: parsed.cnae || null,
+    descricao_cnae: parsed.descricao_cnae || null, status_receita: parsed.status_documento || 'ATIVO',
+    numero_filiais: parsed.numero_filiais || 0, socios: parsed.socios || []
   };
 
   const { data: clienteExist } = await db.from('clientes').select('id').eq('cnpj', cnpj).single();
   let clienteId;
-
   if (clienteExist) {
     clienteId = clienteExist.id;
     await db.from('clientes').update({ ...clienteData, updated_at: new Date().toISOString() }).eq('id', clienteId);
@@ -929,36 +1232,29 @@ async function salvarAnalise(parsed, textoOriginal, responsavel) {
     clienteId = novo?.id;
   }
 
-  // Inserir análise
   await db.from('analises').insert({
-    cliente_id: clienteId,
-    cnpj,
-    score_protector: parsed.score_protector,
-    classe_protector: parsed.classe_protector,
+    cliente_id: clienteId, cnpj,
+    score_protector: parsed.score_protector, classe_protector: parsed.classe_protector,
     probabilidade_inadimplencia: parsed.probabilidade_inadimplencia,
-    protestos: parsed.protestos || 0,
-    acoes: parsed.acoes || 0,
-    inadimplencias: parsed.inadimplencias || 0,
-    cheques_sem_fundo: parsed.cheques_sem_fundo || 0,
-    consultas_realizadas: parsed.consultas_realizadas || 0,
-    score_interno: parsed.score_interno,
-    classe_interna: parsed.classe_interna,
-    risco: parsed.classe_interna,
-    recomendacao: parsed.prazo_sugerido,
-    prazo_sugerido: parsed.prazo_sugerido,
+    protestos: parsed.protestos || 0, acoes: parsed.acoes || 0, inadimplencias: parsed.inadimplencias || 0,
+    cheques_sem_fundo: parsed.cheques_sem_fundo || 0, consultas_realizadas: parsed.consultas_realizadas || 0,
+    classe_interna: parsed.classe_interna, risco: parsed.classe_interna,
+    recomendacao: parsed.prazo_sugerido, prazo_sugerido: parsed.prazo_sugerido, prazo_dias: parsed.prazo_dias,
     confianca: parsed.confianca,
-    pontos_positivos: parsed.pontos_positivos,
-    pontos_atencao: parsed.pontos_atencao,
-    riscos_identificados: parsed.riscos_identificados,
-    parecer_completo: parsed.parecer_completo,
-    dados_brutos: textoOriginal.substring(0, 2000),
-    usuario_responsavel: responsavel
+    pontos_positivos: (parsed.pontos_positivos||[]).join('\n- '), pontos_atencao: (parsed.pontos_atencao||[]).join('\n- '),
+    riscos_identificados: (parsed.riscos_identificados||[]).join('\n- '), parecer_completo: parsed.resumo_executivo,
+    detalhes_classificacao: parsed.detalhes_classificacao,
+    dados_brutos: textoOriginal.substring(0, 2000), usuario_responsavel: responsavel
   });
 }
 
-function renderResultado(d) {
-  const scoreColor = d.score_interno >= 700 ? 'var(--green)' : d.score_interno >= 500 ? 'var(--amber)' : d.score_interno >= 300 ? '#e3843a' : 'var(--red)';
+function converterDataBR(dataBR) {
+  const p = dataBR.split('/');
+  if (p.length !== 3) return null;
+  return `${p[2]}-${p[1]}-${p[0]}`;
+}
 
+function renderResultado(d) {
   document.getElementById('analiseResult').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div>
@@ -970,56 +1266,55 @@ function renderResultado(d) {
 
     <div class="grid-3" style="margin-bottom:16px">
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
-        <div style="font-size:28px;font-weight:700;color:${scoreColor}">${d.score_interno || '—'}</div>
-        <div class="text-muted" style="font-size:11px">Score Interno</div>
-        ${scoreBar(d.score_interno || 0)}
+        <div style="font-size:24px;font-weight:800">${d.score_protector ?? '—'}</div>
+        <div class="text-muted" style="font-size:11px">Score Protector</div>
       </div>
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
-        <div style="margin-bottom:8px">${classBadge(d.classe_interna)}</div>
+        <div style="margin-bottom:6px">${classBadge(d.classe_interna)}</div>
         <div class="text-muted" style="font-size:11px">Classe Rei-Fix</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px">Protector: ${d.classe_protector || '—'} · ${d.score_protector || '—'} pts</div>
       </div>
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
-        <div style="margin-bottom:8px">${recBadge(d.prazo_sugerido)}</div>
+        <div style="margin-bottom:6px">${recBadge(d.prazo_sugerido)}</div>
         <div class="text-muted" style="font-size:11px">Prazo Recomendado</div>
-        <div style="font-size:12px;color:var(--red);margin-top:4px">Prob. Inadimpl.: ${d.probabilidade_inadimplencia || '—'}%</div>
       </div>
     </div>
 
     <div class="grid-2" style="margin-bottom:16px">
       <div style="background:var(--bg3);border-radius:var(--radius);padding:10px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:${d.protestos > 0 ? 'var(--red)' : 'var(--green)'}">${d.protestos || 0}</div>
+        <div style="font-size:18px;font-weight:700;color:${d.protestos > 0 ? 'var(--red)' : 'var(--green)'}">${d.protestos || 0}</div>
         <div class="text-muted" style="font-size:11px">Protestos</div>
       </div>
       <div style="background:var(--bg3);border-radius:var(--radius);padding:10px;text-align:center">
-        <div style="font-size:20px;font-weight:700;color:${d.acoes > 0 ? 'var(--red)' : 'var(--green)'}">${d.acoes || 0}</div>
+        <div style="font-size:18px;font-weight:700;color:${d.acoes > 0 ? 'var(--red)' : 'var(--green)'}">${d.acoes || 0}</div>
         <div class="text-muted" style="font-size:11px">Ações Judiciais</div>
       </div>
     </div>
 
     <div class="parecer-section">
-      <div class="parecer-title" style="color:var(--green)">✅ Pontos Positivos</div>
-      <div class="parecer-text">${(d.pontos_positivos || '').replace(/\n/g,'<br>')}</div>
+      <div class="parecer-title" style="color:var(--blue)">🧮 Como a Classificação Foi Calculada</div>
+      <ul class="parecer-list">${(d.detalhes_classificacao||[]).map(x => `<li>${x.fator} → <strong>${x.impacto}</strong></li>`).join('')}</ul>
     </div>
 
+    <div class="parecer-section">
+      <div class="parecer-title" style="color:var(--green)">✅ Pontos Positivos</div>
+      <ul class="parecer-list">${d.pontos_positivos.map(p => `<li>${p}</li>`).join('')}</ul>
+    </div>
     <div class="parecer-section">
       <div class="parecer-title" style="color:var(--amber)">⚠️ Pontos de Atenção</div>
-      <div class="parecer-text">${(d.pontos_atencao || '').replace(/\n/g,'<br>')}</div>
+      <ul class="parecer-list">${d.pontos_atencao.map(p => `<li>${p}</li>`).join('')}</ul>
     </div>
-
     <div class="parecer-section">
       <div class="parecer-title" style="color:var(--red)">🚨 Riscos Identificados</div>
-      <div class="parecer-text">${(d.riscos_identificados || '').replace(/\n/g,'<br>')}</div>
+      <ul class="parecer-list">${d.riscos_identificados.map(p => `<li>${p}</li>`).join('')}</ul>
     </div>
-
     <div class="parecer-section" style="border-left:3px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0">
       <div class="parecer-title" style="color:var(--blue)">📋 Parecer Executivo</div>
-      <div class="parecer-text">${d.parecer_completo || '—'}</div>
+      <div class="parecer-text">${d.resumo_executivo}</div>
     </div>
 
     <div style="display:flex;gap:10px;margin-top:16px">
       <button class="btn btn-secondary btn-sm" onclick="navigate('analises')">📋 Ver todas as análises</button>
-      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('relatorioTexto').value='';document.getElementById('analiseResult').innerHTML='<div class=empty><div style=font-size:48px;margin-bottom:12px>🤖</div><div>Nova análise</div></div>'">🔄 Nova Análise</button>
+      <button class="btn btn-secondary btn-sm" onclick="document.getElementById('relatorioTexto').value='';document.getElementById('analiseResult').innerHTML='<div class=empty><div style=font-size:48px;margin-bottom:12px>📄</div><div>Nova análise</div></div>'">🔄 Nova Análise</button>
     </div>
   `;
 }
@@ -1027,24 +1322,20 @@ function renderResultado(d) {
 // ==================== LISTA ANÁLISES ====================
 async function loadAnalises() {
   const { data } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false });
-
   if (!data || data.length === 0) {
     document.getElementById('analisesList').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma análise ainda. <a href="#" onclick="navigate(\'nova-analise\')">Criar primeira →</a></td></tr>';
     return;
   }
-
   document.getElementById('analisesList').innerHTML = data.map(a => `
     <tr>
       <td><strong>${a.clientes?.razao_social || '—'}</strong><br><span class="text-muted">${a.cnpj}</span></td>
-      <td><strong>${a.score_interno || '—'}</strong> <span class="text-muted">/ ${a.score_protector || '—'}</span></td>
-      <td>${classBadge(a.classe_interna)}</td>
-      <td style="color:${(a.probabilidade_inadimplencia||0) > 15 ? 'var(--red)' : 'var(--text)'}">${a.probabilidade_inadimplencia || '—'}%</td>
+      <td>${a.score_protector ?? '—'}</td>
+      <td>${classBadgeShort(a.classe_interna)}</td>
+      <td style="color:${(a.probabilidade_inadimplencia||0) > 15 ? 'var(--red)' : 'var(--text)'}">${a.probabilidade_inadimplencia ?? '—'}%</td>
       <td>${recBadge(a.prazo_sugerido)}</td>
       <td>${confGauge(a.confianca)}</td>
-      <td class="text-muted nowrap">${fmtDate(a.data_analise)}</td>
-      <td>
-        <button class="btn btn-secondary btn-sm" onclick="openAnaliseModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">👁 Ver</button>
-      </td>
+      <td class="text-muted nowrap">${fmtDate(a.created_at)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button></td>
     </tr>
   `).join('');
 }
@@ -1052,12 +1343,10 @@ async function loadAnalises() {
 // ==================== CLIENTES ====================
 async function loadClientes() {
   const { data } = await db.from('clientes').select('*').order('created_at', { ascending: false });
-
   if (!data || data.length === 0) {
     document.getElementById('clientesList').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Nenhum cliente cadastrado. Faça a primeira análise.</td></tr>';
     return;
   }
-
   document.getElementById('clientesList').innerHTML = data.map(c => `
     <tr>
       <td><strong>${c.razao_social}</strong></td>
@@ -1066,9 +1355,7 @@ async function loadClientes() {
       <td class="text-muted">${c.cnae || '—'}</td>
       <td><span class="badge ${c.status_receita === 'ATIVO' ? 'badge-a' : 'badge-e'}">${c.status_receita || 'ATIVO'}</span></td>
       <td class="text-muted">${fmtDate(c.created_at)}</td>
-      <td>
-        <button class="btn btn-secondary btn-sm" onclick="verCliente('${c.cnpj}')">📊 Análises</button>
-      </td>
+      <td><button class="btn btn-secondary btn-sm" onclick="verCliente('${c.cnpj}')">📊 Análises</button></td>
     </tr>
   `).join('');
 }
@@ -1076,20 +1363,17 @@ async function loadClientes() {
 async function verCliente(cnpj) {
   navigate('analises');
   const { data } = await db.from('analises').select('*, clientes(razao_social)').eq('cnpj', cnpj).order('created_at', { ascending: false });
-  if (!data || data.length === 0) {
-    toast('Nenhuma análise encontrada para este cliente', 'info');
-    return;
-  }
+  if (!data || data.length === 0) { toast('Nenhuma análise encontrada para este cliente', 'info'); return; }
   document.getElementById('analisesList').innerHTML = data.map(a => `
     <tr>
       <td><strong>${a.clientes?.razao_social || '—'}</strong><br><span class="text-muted">${a.cnpj}</span></td>
-      <td><strong>${a.score_interno || '—'}</strong></td>
-      <td>${classBadge(a.classe_interna)}</td>
-      <td>${a.probabilidade_inadimplencia || '—'}%</td>
+      <td>${a.score_protector ?? '—'}</td>
+      <td>${classBadgeShort(a.classe_interna)}</td>
+      <td>${a.probabilidade_inadimplencia ?? '—'}%</td>
       <td>${recBadge(a.prazo_sugerido)}</td>
       <td>${confGauge(a.confianca)}</td>
-      <td class="text-muted">${fmtDate(a.data_analise)}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick="openAnaliseModal(${JSON.stringify(a).replace(/"/g,'&quot;')})">👁 Ver</button></td>
+      <td class="text-muted">${fmtDate(a.created_at)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button></td>
     </tr>
   `).join('');
 }
@@ -1098,6 +1382,7 @@ async function verCliente(cnpj) {
 function openAnaliseModal(a) {
   if (typeof a === 'string') a = JSON.parse(a);
   document.getElementById('modalTitle').textContent = `Análise — ${a.cnpj}`;
+  const detalhes = a.detalhes_classificacao || [];
   document.getElementById('modalBody').innerHTML = `
     <div class="grid-2" style="margin-bottom:16px">
       <div>
@@ -1107,47 +1392,38 @@ function openAnaliseModal(a) {
       </div>
       <div>
         <div class="text-muted" style="font-size:11px;margin-bottom:4px">DATA DA ANÁLISE</div>
-        <div>${fmtDateTime(a.data_analise)}</div>
+        <div>${fmtDateTime(a.created_at)}</div>
         <div class="text-muted">por ${a.usuario_responsavel}</div>
       </div>
     </div>
-
     <div class="grid-3" style="margin-bottom:16px">
-      <div class="kpi"><div class="kpi-label">Score Interno</div><div class="kpi-value">${a.score_interno || '—'}</div></div>
-      <div class="kpi"><div class="kpi-label">Classe</div><div style="margin-top:8px">${classBadge(a.classe_interna)}</div></div>
+      <div class="kpi"><div class="kpi-label">Score Protector</div><div class="kpi-value">${a.score_protector ?? '—'}</div></div>
+      <div class="kpi"><div class="kpi-label">Classe Rei-Fix</div><div style="margin-top:8px">${classBadge(a.classe_interna)}</div></div>
       <div class="kpi"><div class="kpi-label">Confiança</div>${confGauge(a.confianca)}</div>
     </div>
-
     <div class="grid-4" style="margin-bottom:16px">
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:10px">
-        <div style="font-size:20px;font-weight:700;color:${(a.protestos||0)>0?'var(--red)':'var(--green)'}">${a.protestos || 0}</div>
+        <div style="font-size:18px;font-weight:700;color:${(a.protestos||0)>0?'var(--red)':'var(--green)'}">${a.protestos || 0}</div>
         <div class="text-muted" style="font-size:11px">Protestos</div>
       </div>
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:10px">
-        <div style="font-size:20px;font-weight:700;color:${(a.acoes||0)>0?'var(--red)':'var(--green)'}">${a.acoes || 0}</div>
+        <div style="font-size:18px;font-weight:700;color:${(a.acoes||0)>0?'var(--red)':'var(--green)'}">${a.acoes || 0}</div>
         <div class="text-muted" style="font-size:11px">Ações</div>
       </div>
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:10px">
-        <div style="font-size:20px;font-weight:700;color:${(a.inadimplencias||0)>0?'var(--red)':'var(--green)'}">${a.inadimplencias || 0}</div>
+        <div style="font-size:18px;font-weight:700;color:${(a.inadimplencias||0)>0?'var(--red)':'var(--green)'}">${a.inadimplencias || 0}</div>
         <div class="text-muted" style="font-size:11px">Inadimplências</div>
       </div>
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:10px">
-        <div style="font-size:20px;font-weight:700">${a.consultas_realizadas || 0}</div>
+        <div style="font-size:18px;font-weight:700">${a.consultas_realizadas || 0}</div>
         <div class="text-muted" style="font-size:11px">Consultas</div>
       </div>
     </div>
-
     <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div class="text-muted" style="font-size:11px">PRAZO SUGERIDO</div>
-        <div style="margin-top:6px">${recBadge(a.prazo_sugerido)}</div>
-      </div>
-      <div>
-        <div class="text-muted" style="font-size:11px">PROB. INADIMPLÊNCIA</div>
-        <div style="font-size:20px;font-weight:700;color:${(a.probabilidade_inadimplencia||0)>15?'var(--red)':'var(--amber)'}">${a.probabilidade_inadimplencia || '—'}%</div>
-      </div>
+      <div><div class="text-muted" style="font-size:11px">PRAZO SUGERIDO</div><div style="margin-top:6px">${recBadge(a.prazo_sugerido)}</div></div>
+      <div><div class="text-muted" style="font-size:11px">PROB. INADIMPLÊNCIA</div><div style="font-size:18px;font-weight:700;color:${(a.probabilidade_inadimplencia||0)>15?'var(--red)':'var(--amber)'}">${a.probabilidade_inadimplencia ?? '—'}%</div></div>
     </div>
-
+    ${detalhes.length ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--blue)">🧮 Cálculo da Classificação</div><ul class="parecer-list">${detalhes.map(x=>`<li>${x.fator} → <strong>${x.impacto}</strong></li>`).join('')}</ul></div>` : ''}
     ${a.pontos_positivos ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--green)">✅ Pontos Positivos</div><div class="parecer-text">${a.pontos_positivos.replace(/\n/g,'<br>')}</div></div>` : ''}
     ${a.pontos_atencao ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--amber)">⚠️ Atenção</div><div class="parecer-text">${a.pontos_atencao.replace(/\n/g,'<br>')}</div></div>` : ''}
     ${a.riscos_identificados ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--red)">🚨 Riscos</div><div class="parecer-text">${a.riscos_identificados.replace(/\n/g,'<br>')}</div></div>` : ''}
@@ -1157,9 +1433,7 @@ function openAnaliseModal(a) {
 }
 
 // ==================== EXCEÇÕES ====================
-function openExcecaoModal() {
-  document.getElementById('modalExcecao').classList.add('open');
-}
+function openExcecaoModal() { document.getElementById('modalExcecao').classList.add('open'); }
 
 async function saveExcecao() {
   const cnpj = document.getElementById('excCnpj').value.replace(/\D/g,'');
@@ -1167,40 +1441,21 @@ async function saveExcecao() {
   const autorizado = document.getElementById('excAutorizado').value;
   const validade = document.getElementById('excValidade').value;
   const obs = document.getElementById('excObs').value;
-
-  if (!cnpj || !motivo || !autorizado) {
-    toast('Preencha CNPJ, motivo e autorizado por.', 'error');
-    return;
-  }
-
+  if (!cnpj || !motivo || !autorizado) { toast('Preencha CNPJ, motivo e autorizado por.', 'error'); return; }
   const { data: cli } = await db.from('clientes').select('id').eq('cnpj', cnpj).single();
-  if (!cli) {
-    toast('Cliente não encontrado. Faça uma análise primeiro.', 'error');
-    return;
-  }
-
-  const { error } = await db.from('excecoes_comerciais').insert({
-    cliente_id: cli.id,
-    motivo,
-    autorizado_por: autorizado,
-    validade: validade || null,
-    observacoes: obs
-  });
-
+  if (!cli) { toast('Cliente não encontrado. Faça uma análise primeiro.', 'error'); return; }
+  const { error } = await db.from('excecoes_comerciais').insert({ cliente_id: cli.id, motivo, autorizado_por: autorizado, validade: validade || null, observacoes: obs });
   if (error) { toast('Erro ao salvar: ' + error.message, 'error'); return; }
   toast('Exceção cadastrada com sucesso!', 'success');
-  closeModal('modalExcecao');
-  loadExcecoes();
+  closeModal('modalExcecao'); loadExcecoes();
 }
 
 async function loadExcecoes() {
   const { data } = await db.from('excecoes_comerciais').select('*, clientes(razao_social, cnpj)').order('created_at', { ascending: false });
-
   if (!data || data.length === 0) {
     document.getElementById('excecoesList').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma exceção comercial registrada</td></tr>';
     return;
   }
-
   document.getElementById('excecoesList').innerHTML = data.map(e => `
     <tr>
       <td><strong>${e.clientes?.razao_social || '—'}</strong><br><span class="text-muted">${e.clientes?.cnpj || ''}</span></td>
@@ -1208,30 +1463,79 @@ async function loadExcecoes() {
       <td>${e.autorizado_por || '—'}</td>
       <td class="text-muted">${e.validade ? fmtDate(e.validade) : 'Sem validade'}</td>
       <td><span class="badge ${e.ativo ? 'badge-a' : 'badge-e'}">${e.ativo ? 'Ativo' : 'Encerrado'}</span></td>
-      <td>
-        <button class="btn btn-danger btn-sm" onclick="toggleExcecao('${e.id}', ${e.ativo})">
-          ${e.ativo ? '🚫 Encerrar' : '✅ Reativar'}
-        </button>
-      </td>
+      <td><button class="btn btn-danger btn-sm" onclick="toggleExcecao('${e.id}', ${e.ativo})">${e.ativo ? '🚫 Encerrar' : '✅ Reativar'}</button></td>
     </tr>
   `).join('');
 }
 
 async function toggleExcecao(id, ativo) {
   await db.from('excecoes_comerciais').update({ ativo: !ativo }).eq('id', id);
-  toast('Status atualizado', 'success');
-  loadExcecoes();
+  toast('Status atualizado', 'success'); loadExcecoes();
+}
+
+// ==================== REFERÊNCIAS COMERCIAIS ====================
+function openReferenciaModal() { document.getElementById('modalReferencia').classList.add('open'); }
+
+async function saveReferencia() {
+  const cnpj = document.getElementById('refCnpj').value.replace(/\D/g,'');
+  const fornecedor = document.getElementById('refFornecedor').value;
+  const tempo = document.getElementById('refTempo').value;
+  const pontualidade = document.getElementById('refPontualidade').value;
+  const classificacao = document.getElementById('refClassificacao').value;
+  const obs = document.getElementById('refObs').value;
+  if (!cnpj || !fornecedor) { toast('Preencha CNPJ e fornecedor.', 'error'); return; }
+  const { data: cli } = await db.from('clientes').select('id').eq('cnpj', cnpj).single();
+  if (!cli) { toast('Cliente não encontrado. Faça uma análise primeiro.', 'error'); return; }
+  const { error } = await db.from('referencias_comerciais').insert({ cliente_id: cli.id, fornecedor, tempo_relacionamento: tempo, pontualidade, classificacao, observacoes: obs });
+  if (error) { toast('Erro ao salvar: ' + error.message, 'error'); return; }
+  toast('Referência comercial cadastrada!', 'success');
+  closeModal('modalReferencia'); loadReferencias();
+}
+
+async function loadReferencias() {
+  const { data, error } = await db.from('referencias_comerciais').select('*, clientes(razao_social, cnpj)').order('created_at', { ascending: false });
+  if (error || !data || data.length === 0) {
+    document.getElementById('referenciasList').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr>';
+    return;
+  }
+  const classMap = { Bom: 'badge-a', Médio: 'badge-c', Ruim: 'badge-e' };
+  document.getElementById('referenciasList').innerHTML = data.map(r => `
+    <tr>
+      <td><strong>${r.clientes?.razao_social || '—'}</strong></td>
+      <td>${r.fornecedor}</td>
+      <td class="text-muted">${r.tempo_relacionamento || '—'}</td>
+      <td class="text-muted">${r.pontualidade || '—'}</td>
+      <td><span class="badge ${classMap[r.classificacao]||'badge-c'}">${r.classificacao}</span></td>
+      <td class="text-muted">${fmtDate(r.created_at)}</td>
+    </tr>
+  `).join('');
+}
+
+// ==================== RETENÇÕES ====================
+async function loadRetencoes() {
+  const { data, error } = await db.from('retencoes').select('*, clientes(razao_social)').order('created_at', { ascending: false });
+  if (error || !data || data.length === 0) {
+    document.getElementById('retencoesList').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma retenção registrada</td></tr>';
+    return;
+  }
+  document.getElementById('retencoesList').innerHTML = data.map(r => `
+    <tr>
+      <td><strong>${r.clientes?.razao_social || '—'}</strong></td>
+      <td>${r.motivo || '—'}</td>
+      <td class="text-muted">${r.parametro || '—'}</td>
+      <td><span class="badge ${r.ativo ? 'badge-c' : 'badge-a'}">${r.ativo ? 'Em análise' : 'Resolvida'}</span></td>
+      <td class="text-muted">${fmtDate(r.created_at)}</td>
+    </tr>
+  `).join('');
 }
 
 // ==================== NEGATIVAÇÕES ====================
 async function loadNegativacoes() {
   const { data } = await db.from('negativacoes').select('*, clientes(razao_social)').order('created_at', { ascending: false });
-
   if (!data || data.length === 0) {
     document.getElementById('negativacoesList').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr>';
     return;
   }
-
   const statusColors = { 'Em atraso':'badge-d', 'Cobrança':'badge-c', 'Protestado':'badge-e', 'Negativado':'badge-e', 'Acordo':'badge-b', 'Regularizado':'badge-a' };
   document.getElementById('negativacoesList').innerHTML = data.map(n => `
     <tr>
@@ -1244,11 +1548,28 @@ async function loadNegativacoes() {
   `).join('');
 }
 
+// ==================== HISTÓRICO DE DECISÕES ====================
+async function loadDecisoes() {
+  const { data } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false }).limit(30);
+  if (!data || data.length === 0) {
+    document.getElementById('decisoesList').innerHTML = '<div class="text-muted" style="text-align:center;padding:32px">Nenhuma decisão registrada ainda</div>';
+    return;
+  }
+  document.getElementById('decisoesList').innerHTML = data.map(a => `
+    <div class="timeline-item">
+      <div class="timeline-dot ${['A','B'].includes(a.classe_interna)?'dot-green':['D','E'].includes(a.classe_interna)?'dot-red':'dot-amber'}"></div>
+      <div class="timeline-content">
+        <div class="timeline-text"><strong>${a.clientes?.razao_social || a.cnpj}</strong> — Classe ${a.classe_interna} → prazo de ${a.prazo_sugerido} concedido</div>
+        <div class="timeline-time">${fmtDateTime(a.created_at)} · responsável: ${a.usuario_responsavel || '—'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
 // ==================== CARTEIRA ====================
 let carteiraChartInst = null;
 async function loadCarteira() {
   const { data } = await db.from('analises').select('*').order('created_at', { ascending: false });
-
   if (!data || data.length === 0) {
     document.getElementById('cart-score').textContent = '—';
     document.getElementById('cart-prob').textContent = '—';
@@ -1256,98 +1577,99 @@ async function loadCarteira() {
     document.getElementById('oportunidades').innerHTML = '<div class="text-muted" style="text-align:center;padding:24px">Nenhuma análise ainda</div>';
     return;
   }
-
-  const scores = data.map(a => a.score_interno).filter(Boolean);
+  const scores = data.map(a => a.score_protector).filter(Boolean);
   const probs = data.map(a => a.probabilidade_inadimplencia).filter(Boolean);
-  const prazos = data.map(a => { const m = (a.prazo_sugerido||'').match(/(\d+)/); return m ? parseInt(m[1]) : null; }).filter(Boolean);
+  const prazos = data.map(a => a.prazo_dias).filter(p => p !== null && p !== undefined);
 
   document.getElementById('cart-score').textContent = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : '—';
   document.getElementById('cart-prob').textContent = probs.length ? (probs.reduce((a,b)=>a+b,0)/probs.length).toFixed(1) : '—';
   document.getElementById('cart-prazo').textContent = prazos.length ? Math.round(prazos.reduce((a,b)=>a+b,0)/prazos.length) : '—';
 
-  // Chart
   const classes = ['A','B','C','D','E'];
   const counts = classes.map(c => data.filter(a => a.classe_interna === c).length);
-
   if (carteiraChartInst) carteiraChartInst.destroy();
   const ctx = document.getElementById('carteiraChart').getContext('2d');
   carteiraChartInst = new Chart(ctx, {
     type: 'bar',
-    data: {
-      labels: ['A — Muito Baixo','B — Baixo','C — Moderado','D — Alto','E — Crítico'],
-      datasets: [{
-        data: counts,
-        backgroundColor: ['#1a4a20','#0d2a4a','#3a2a0a','#2a1a0a','#2a0a0a'],
-        borderColor: ['#3fb950','#58a6ff','#d29922','#e3843a','#f85149'],
-        borderWidth: 1.5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } },
-        y: { ticks: { color: '#8b949e', stepSize: 1 }, grid: { color: '#21262d' } }
-      }
-    }
+    data: { labels: ['A — Muito Baixo','B — Baixo','C — Moderado','D — Alto','E — Crítico'],
+      datasets: [{ data: counts, backgroundColor: ['#0c2a1f','#0d2438','#2e2310','#2e1d10','#2e1018'],
+        borderColor: ['#33c481','#5da8f5','#e0a83a','#e8854a','#f0556a'], borderWidth: 1.5 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#8d97ab' }, grid: { color: '#1a2030' } }, y: { ticks: { color: '#8d97ab', stepSize: 1 }, grid: { color: '#1a2030' } } } }
   });
 
-  // Oportunidades
   const opp = [];
   data.forEach(a => {
     if (['D','E'].includes(a.classe_interna)) {
       opp.push(`<div class="grupo-item"><div class="grupo-dot" style="background:var(--red)"></div><div><strong>${a.cnpj}</strong> — Classe ${a.classe_interna}<br><span class="text-muted" style="font-size:12px">Sugere-se reduzir prazo ou solicitar garantia adicional</span></div></div>`);
     }
   });
+  document.getElementById('oportunidades').innerHTML = opp.length ? opp.join('') : '<div class="alert alert-success">Nenhuma oportunidade crítica identificada na carteira atual.</div>';
+}
 
-  document.getElementById('oportunidades').innerHTML = opp.length
-    ? opp.join('')
-    : '<div class="alert alert-success">Nenhuma oportunidade crítica identificada na carteira atual.</div>';
+// ==================== EVOLUÇÃO DE SCORES (página completa) ====================
+let evolucaoFullChartInst = null;
+async function loadEvolucaoFull() {
+  const { data } = await db.from('analises').select('*').order('created_at', { ascending: true });
+  if (!data || data.length === 0) return;
+  const labels = data.map(a => fmtDate(a.created_at));
+  const valores = data.map(a => a.score_protector || 0);
+  if (evolucaoFullChartInst) evolucaoFullChartInst.destroy();
+  const ctx = document.getElementById('evolucaoFullChart').getContext('2d');
+  evolucaoFullChartInst = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Score Protector', data: valores, borderColor: '#4d8ef5', backgroundColor: 'rgba(77,142,245,.1)', fill: true, tension: .3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#8d97ab' } } },
+      scales: { x: { ticks: { color: '#8d97ab' }, grid: { display:false } }, y: { min:0, max:1000, ticks: { color: '#8d97ab' }, grid: { color: '#1a2030' } } } }
+  });
+}
+
+// ==================== CONSULTAS E ALERTAS (página completa) ====================
+async function loadConsultasEAlertas() {
+  const { data } = await db.from('analises').select('*, clientes(razao_social)').order('consultas_realizadas', { ascending: false });
+  if (!data || data.length === 0) {
+    document.getElementById('consultasList').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text3)">Sem dados</td></tr>';
+    document.getElementById('alertasCompletos').innerHTML = '<div class="text-muted" style="padding:16px;text-align:center">Sem alertas</div>';
+    return;
+  }
+  document.getElementById('consultasList').innerHTML = data.map(a => `
+    <tr>
+      <td><strong>${a.clientes?.razao_social || a.cnpj}</strong></td>
+      <td>${a.consultas_realizadas || 0}</td>
+      <td>${(a.consultas_realizadas||0) > 30 ? '<span class="badge badge-d">Alto</span>' : (a.consultas_realizadas||0) > 10 ? '<span class="badge badge-c">Moderado</span>' : '<span class="badge badge-a">Normal</span>'}</td>
+    </tr>
+  `).join('');
+  renderAlertas(data);
+  document.getElementById('alertasCompletos').innerHTML = document.getElementById('dashAlertas') ? document.getElementById('dashAlertas').innerHTML : '';
 }
 
 // ==================== AUDITORIA ====================
 async function loadAuditoria() {
   const { data } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false }).limit(50);
-
   if (!data || data.length === 0) {
     document.getElementById('auditLog').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma ação registrada</td></tr>';
     return;
   }
-
   document.getElementById('auditLog').innerHTML = data.map(a => `
     <tr>
       <td><span class="badge badge-b">📊 Análise</span></td>
       <td>${a.usuario_responsavel || '—'}</td>
       <td>${a.clientes?.razao_social || a.cnpj}</td>
-      <td>Score ${a.score_interno || '—'} · Classe ${a.classe_interna || '—'} · Prazo: ${a.prazo_sugerido || '—'}</td>
+      <td>Score ${a.score_protector ?? '—'} · Classe ${a.classe_interna || '—'} · Prazo: ${a.prazo_sugerido || '—'}</td>
       <td class="text-muted nowrap">${fmtDateTime(a.created_at)}</td>
     </tr>
   `).join('');
 }
 
-// ==================== MODALS ====================
+// ==================== MODAL HELPER ====================
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
 }
 
-// Click outside to close
-document.querySelectorAll('.modal-bg').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// ==================== GLOBAL SEARCH ====================
-document.getElementById('globalSearch').addEventListener('input', async function() {
-  const q = this.value.trim();
-  if (q.length < 2) return;
-  const { data } = await db.from('clientes').select('*').or(`razao_social.ilike.%${q}%,cnpj.ilike.%${q.replace(/\D/g,'')}%`).limit(5);
-  // Simple: navigate to clients with filter
-  if (data && data.length > 0) toast(`${data.length} cliente(s) encontrado(s) para "${q}"`, 'info');
-});
-
 // ==================== INIT ====================
-document.getElementById('dashDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-loadDashboard();
+window.addEventListener('DOMContentLoaded', () => {
+  loadDashboard();
+});
 </script>
 </body>
 </html>
