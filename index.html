@@ -376,16 +376,24 @@ select option{background:var(--bg2)}
         <div class="page-header">
           <div>
             <div class="page-title">Nova Análise de Crédito</div>
-            <div class="page-sub">Cole o texto extraído do relatório Protector/Serasa</div>
+            <div class="page-sub">Escolha a origem dos dados para iniciar a análise</div>
           </div>
         </div>
 
-        <div class="grid-2">
+        <div class="card mb-16">
+          <div style="display:flex;gap:10px">
+            <button class="btn flex-1" id="modoBureauBtn" onclick="selecionarModoAnalise('bureau')" style="background:var(--blue2);color:#fff">📄 Relatório Protector/Serasa</button>
+            <button class="btn btn-secondary flex-1" id="modoManualBtn" onclick="selecionarModoAnalise('manual')">📝 Cadastro Manual (sem bureau)</button>
+          </div>
+        </div>
+
+        <!-- MODO BUREAU (Protector / Serasa colado) -->
+        <div id="modoBureau" class="grid-2">
           <div class="card">
             <div class="card-title">📄 Dados do Relatório</div>
             <div class="form-group">
-              <label>Texto do Relatório Protector *</label>
-              <textarea id="relatorioTexto" placeholder="Cole aqui o texto completo do relatório Protector / Serasa...&#10;&#10;O motor de análise reconhece automaticamente os campos: Razão Social, Documento, Score, Classe, Pontos, Protestos, Ações, Inadimplências, Sócios, Grupo Econômico..." style="min-height:340px"></textarea>
+              <label>Texto do Relatório (Protector ou Serasa) *</label>
+              <textarea id="relatorioTexto" placeholder="Cole aqui o texto completo do relatório Protector ou Serasa, PJ ou PF...&#10;&#10;O motor detecta automaticamente o formato e extrai os campos relevantes." style="min-height:340px"></textarea>
             </div>
             <div class="form-group">
               <label>Responsável pela Análise</label>
@@ -396,7 +404,7 @@ select option{background:var(--bg2)}
               <button class="btn btn-secondary" onclick="preencherExemplo()">📋 Usar Exemplo</button>
             </div>
             <div class="text-muted mt-12" style="font-size:11.5px">
-              A análise é feita por um motor de regras determinístico baseado na Política Financeira da Rei-Fix — sem uso de IA generativa, sem custo por análise e sem envio de dados a terceiros.
+              Motor de regras determinístico — sem IA generativa, sem custo por análise, sem envio de dados a terceiros. Formatos suportados: Protector PJ, Protector PF, Serasa PJ, Serasa PF.
             </div>
           </div>
 
@@ -406,7 +414,88 @@ select option{background:var(--bg2)}
               <div class="empty">
                 <div style="font-size:48px;margin-bottom:12px">📄</div>
                 <div>Cole o texto do relatório e clique em<br><strong>Analisar Relatório</strong></div>
-                <div class="text-muted mt-12">O motor extrai os dados, aplica os<br>critérios da política financeira e gera o parecer</div>
+                <div class="text-muted mt-12">O motor detecta o formato, extrai os dados<br>e aplica os critérios da política financeira</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODO MANUAL (cadastro sem bureau) -->
+        <div id="modoManual" class="grid-2" style="display:none">
+          <div class="card">
+            <div class="card-title">📝 Cadastro Manual — Análise sem Bureau</div>
+            <div class="alert alert-info">Use quando não há relatório de bureau disponível. Confiabilidade da análise: 50% (menor que bureau completo).</div>
+
+            <div class="form-group"><label>Razão Social / Nome *</label><input type="text" id="manRazaoSocial"></div>
+            <div class="form-group"><label>CNPJ / CPF *</label><input type="text" id="manDocumento" placeholder="Somente números"></div>
+            <div class="grid-2">
+              <div class="form-group"><label>Tempo de Mercado (anos)</label><input type="number" id="manTempoMercado" min="0" step="0.5"></div>
+              <div class="form-group"><label>Capital Social (R$)</label><input type="number" id="manCapitalSocial" min="0"></div>
+            </div>
+            <div class="form-group">
+              <label>Faixa de Faturamento</label>
+              <select id="manFaturamento">
+                <option value="">Não informado</option>
+                <option value="Até R$ 100 mil/ano">Até R$ 100 mil/ano</option>
+                <option value="R$ 100 mil a R$ 500 mil/ano">R$ 100 mil a R$ 500 mil/ano</option>
+                <option value="R$ 500 mil a R$ 2 milhões/ano">R$ 500 mil a R$ 2 milhões/ano</option>
+                <option value="Acima de R$ 2 milhões/ano">Acima de R$ 2 milhões/ano</option>
+              </select>
+            </div>
+
+            <div class="divider"></div>
+            <div class="card-title" style="margin-bottom:10px">Histórico Interno (se já é cliente)</div>
+            <div class="form-group"><label><input type="checkbox" id="manClienteAtual" style="width:auto;margin-right:6px">Já é cliente da Rei-Fix</label></div>
+            <div class="grid-2">
+              <div class="form-group"><label>Quantidade de Atrasos</label><input type="number" id="manQtdAtrasos" min="0" value="0"></div>
+              <div class="form-group"><label>Maior Atraso (dias)</label><input type="number" id="manMaiorAtraso" min="0" value="0"></div>
+            </div>
+            <div class="form-group"><label><input type="checkbox" id="manInadimplencia" style="width:auto;margin-right:6px">Possui inadimplência ativa</label></div>
+            <div class="form-group"><label><input type="checkbox" id="manDevolucoes" style="width:auto;margin-right:6px">Possui devoluções</label></div>
+            <div class="form-group"><label><input type="checkbox" id="manTitulosAberto" style="width:auto;margin-right:6px">Possui títulos em aberto</label></div>
+
+            <div class="divider"></div>
+            <div class="card-title" style="margin-bottom:10px">Avaliação Comercial</div>
+            <div class="grid-2">
+              <div class="form-group"><label>Referências Positivas (qtd)</label><input type="number" id="manReferenciasPositivas" min="0" value="0"></div>
+              <div class="form-group">
+                <label>Estrutura da Empresa</label>
+                <select id="manEstrutura">
+                  <option value="Boa">Boa</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Precária">Precária</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group"><label><input type="checkbox" id="manVisitaComercial" style="width:auto;margin-right:6px">Visita comercial realizada</label></div>
+            <div class="form-group">
+              <label>Avaliação Comercial Geral</label>
+              <select id="manAvaliacaoComercial">
+                <option value="Bom">Bom</option>
+                <option value="Médio">Médio</option>
+                <option value="Ruim">Ruim</option>
+              </select>
+            </div>
+
+            <div class="divider"></div>
+            <div class="card-title" style="margin-bottom:10px">Restrições Conhecidas</div>
+            <div class="form-group"><label><input type="checkbox" id="manProtesto" style="width:auto;margin-right:6px">Possui protesto</label></div>
+            <div class="form-group"><label><input type="checkbox" id="manAcao" style="width:auto;margin-right:6px">Possui ação judicial</label></div>
+            <div class="form-group"><label><input type="checkbox" id="manPendencia" style="width:auto;margin-right:6px">Possui outra pendência</label></div>
+
+            <div class="form-group"><label>Observações</label><textarea id="manObs" style="min-height:80px;font-family:inherit;font-size:13px"></textarea></div>
+            <div class="form-group"><label>Responsável pela Análise</label><input type="text" id="manResponsavel" value="Ezequiel Silva"></div>
+
+            <button class="btn btn-primary flex-1" onclick="runAnaliseManual()">⚙️ Gerar Análise Manual</button>
+          </div>
+
+          <div class="card">
+            <div class="card-title">💡 Resultado da Análise</div>
+            <div id="analiseManualResult">
+              <div class="empty">
+                <div style="font-size:48px;margin-bottom:12px">📝</div>
+                <div>Preencha os dados e clique em<br><strong>Gerar Análise Manual</strong></div>
+                <div class="text-muted mt-12">Use quando não houver relatório<br>de bureau disponível</div>
               </div>
             </div>
           </div>
@@ -687,42 +776,63 @@ const SUPABASE_KEY = 'sb_publishable_EMmnH6sy-M97rLlWEtkmKQ_HWIY2uMj';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ==================== MOTOR DE ANÁLISE — SEM IA, 100% REGRAS ====================
-// Baseado nas faixas oficiais de score Protector definidas no Manual de Política Financeira
-// (0-399 / 400-599 / 600-799 / 800-1000), com rebaixamentos conservadores por restrições reais.
+// ============================================================
+// MOTOR DE ANÁLISE DE CRÉDITO REI-FIX v2 — SEM IA, MULTI-FORMATO
+// Suporta: Protector PJ, Protector PF, Serasa PJ, Serasa PF, Cadastro Manual
+// ============================================================
 
-function parseRelatorio(texto) {
-  const get = (regex) => { const m = texto.match(regex); return m ? m[1].trim() : null; };
-  const getNum = (regex) => {
-    const v = get(regex);
-    if (!v) return 0;
-    return parseFloat(v.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
-  };
+// ---------- 0. DETECÇÃO DE FORMATO ----------
+function detectarFormato(texto) {
+  const t = texto.toUpperCase();
+  const isSerasa = /SERASA|EXPERIAN|PEFIN|REFIN/.test(t);
+  const isProtector = !isSerasa && (/SCORE[\s\S]{0,40}PROBABILIDADE DE INADIMPL/.test(t) || /CONTROLE SOCIET[ÁA]RIO|GRUPO ECON[ÔO]MICO|PARTICIPA[ÇC][ÃA]O EM EMPRESAS/.test(t));
+  // PF vs PJ: presença de "Razão Social" / quadro societário PJ = PJ. CPF de 11 dígitos sem razão social = PF.
+  const docMatch = texto.match(/Documento:\s*\n?\s*([\d.\-\/]+)/i) || texto.match(/CNPJ:\s*([\d.\-\/]+)/i) || texto.match(/CPF:\s*([\d.\-\/]+)/i);
+  const doc = docMatch ? docMatch[1].replace(/\D/g, '') : '';
+  const temRazaoSocial = /raz[ãa]o social\s*:/i.test(texto) || /quadro societ[áa]rio/i.test(texto) || /control[ea] societ[áa]rio/i.test(texto) || /CNPJ:\s*[\d.\-\/]+\s*\|/i.test(texto);
+  const isPF = doc.length === 11 && !temRazaoSocial;
 
-  const razaoSocial = get(/Razão Social:\s*(.+)/i);
-  const cnpj = get(/Documento:\s*([\d]+)/i);
-  const nomeFantasia = get(/Nome Fantasia:\s*(.+)/i);
-  const capitalSocial = getNum(/Valor do Capital Social:\s*R?\$?\s*([\d.,]+)/i);
-  const dataAbertura = get(/Data de Abertura:\s*([\d/]+)/i);
-  const cnae = get(/CNAE:\s*([\d]+)/i);
-  const descricaoCnae = get(/Descrição CNAE:\s*(.+)/i);
-  const statusDocumento = get(/Status Documento:\s*(.+)/i);
-  const numFiliais = getNum(/Número de Filiais:\s*(\d+)/i);
+  if (isSerasa) return isPF ? 'SERASA_PF' : 'SERASA_PJ';
+  if (isProtector) return isPF ? 'PROTECTOR_PF' : 'PROTECTOR_PJ';
+  return 'DESCONHECIDO';
+}
 
-  const inadimplenciasQtd = getNum(/Registros de Inadimplência:\s*(\d+)/i);
-  const inadimplenciasVal = getNum(/Registros de Inadimplência:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const acoesQtd = getNum(/Ações:\s*(\d+)/i);
-  const acoesVal = getNum(/Ações:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const protestosQtd = getNum(/Protestos:\s*(\d+)/i);
-  const protestosVal = getNum(/Protestos:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const chequesSemFundo = getNum(/Cheques Sem Fundos:\s*(\d+)/i);
-  const consultasRealizadas = getNum(/Consultas Realizadas:\s*(\d+)/i);
+// ---------- helpers genéricos ----------
+function getMatch(texto, regex) { const m = texto.match(regex); return m ? m[1].trim() : null; }
+function getNumBR(texto, regex) {
+  const v = getMatch(texto, regex);
+  if (!v) return 0;
+  return parseFloat(v.replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+}
 
-  const probInadimplencia = getNum(/Probabilidade de Inadimplência:\s*([\d.,]+)\s*%/i);
-  const classeExterna = get(/Classe:\s*([A-E])/i);
-  const matchPontos = texto.match(/SCORE[\s\S]*?Pontos:\s*(\d+)/i);
+// ============================================================
+// PARSER: PROTECTOR PJ (formato original já validado)
+// ============================================================
+function parseProtectorPJ(texto) {
+  const razaoSocial = getMatch(texto, /Razão Social:\s*(.+)/i);
+  const documento = getMatch(texto, /Documento:\s*([\d]+)/i);
+  const nomeFantasia = getMatch(texto, /Nome Fantasia:\s*(.+)/i);
+  const capitalSocial = getNumBR(texto, /Valor do Capital Social:\s*R?\$?\s*([\d.,]+)/i);
+  const dataAbertura = getMatch(texto, /Data de Abertura:\s*([\d/]+)/i);
+  const cnae = getMatch(texto, /CNAE:\s*([\d]+)/i);
+  const descricaoCnae = getMatch(texto, /Descrição CNAE:\s*(.+)/i);
+  const statusDocumento = getMatch(texto, /Status Documento:\s*(.+)/i);
+  const numFiliais = getNumBR(texto, /Número de Filiais:\s*(\d+)/i);
+
+  const inadimplenciasQtd = getNumBR(texto, /Registros de Inadimplência:\s*(\d+)/i);
+  const inadimplenciasVal = getNumBR(texto, /Registros de Inadimplência:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const acoesQtd = getNumBR(texto, /Ações:\s*(\d+)/i);
+  const acoesVal = getNumBR(texto, /Ações:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const protestosQtd = getNumBR(texto, /Protestos:\s*(\d+)/i);
+  const protestosVal = getNumBR(texto, /Protestos:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
+  const chequesSemFundo = getNumBR(texto, /Cheques Sem Fundos:\s*(\d+)/i);
+  const consultasRealizadas = getNumBR(texto, /Consultas Realizadas:\s*(\d+)/i);
+
+  const probInadimplencia = getNumBR(texto, /Probabilidade de Inadimplência:\s*([\d.,]+)\s*%/i);
+  const classeExterna = getMatch(texto, /Classe:\s*([A-F])/i);
+  const matchPontos = texto.match(/SCORE[\s\S]{0,200}?Pontos:\s*(\d+)/i);
   const pontosExternos = matchPontos ? parseInt(matchPontos[1]) : null;
-  const tipoCliente = get(/Tipo:\s*(\w+)/i);
+  const tipoCliente = getMatch(texto, /Tipo:\s*(\w+)/i);
 
   const socios = [];
   const sociosRegex = /([A-ZÀ-Ú][A-ZÀ-Ú\s.]+?)\s*-\s*S[OÓ]CIO\s*-\s*([\d.,]+)%/gi;
@@ -738,50 +848,183 @@ function parseRelatorio(texto) {
     if (gm) grupoEconomico.push({ nome: gm[1].trim(), doc: gm[2], papel: gm[3].trim() });
   });
 
-  let tempoMercadoAnos = null;
-  if (dataAbertura) {
-    const partes = dataAbertura.split('/').map(Number);
-    const d = partes[0], mo = partes[1], y = partes[2];
-    if (y) {
-      const abertura = new Date(y, (mo || 1) - 1, d || 1);
-      tempoMercadoAnos = (Date.now() - abertura.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+  return {
+    tipoPessoa: 'PJ', fonte: 'PROTECTOR',
+    nome: razaoSocial, documento, nomeFantasia, capitalSocial, dataAbertura, cnae, descricaoCnae,
+    statusDocumento, numFiliais, inadimplenciasQtd, inadimplenciasVal, acoesQtd, acoesVal,
+    protestosQtd, protestosVal, chequesSemFundo, consultasRealizadas, probInadimplencia,
+    classeExterna, pontosExternos, tipoCliente, socios, grupoEconomico
+  };
+}
+
+// ============================================================
+// PARSER: PROTECTOR PF (tabelas tab-separated, sem capital social/CNAE)
+// ============================================================
+function parseProtectorPF(texto) {
+  const nome = getMatch(texto, /Nome:\s*\n?\s*(.+)/i);
+  const documento = getMatch(texto, /Documento:\s*\n?\s*([\d]+)/i);
+  const statusDocumento = getMatch(texto, /Status Documento:\s*\n?\s*(.+)/i);
+  const dataNascimento = getMatch(texto, /Data de Nascimento:\s*\n?\s*([\d/]+)/i);
+
+  // Quadro de resumo (linhas com tabs: Descrição / Qtd / 1ª Ocorr / Última Ocorr / Valor)
+  const inadimplenciasQtd = getNumBR(texto, /Registros de Inadimplência\s*\t?\s*(\d+)/i);
+  const inadimplenciasVal = getNumBR(texto, /Registros de Inadimplência[\s\S]{0,120}?([\d.,]+)\s*$/im);
+  const acoesQtd = getNumBR(texto, /Ações\s*\t?\s*(\d+)/i);
+  const protestosQtd = getNumBR(texto, /Protestos\s*\t?\s*(\d+)/i);
+  const chequesSemFundo = getNumBR(texto, /Cheques Sem Fundos\s*\t?\s*(\d+)/i);
+
+  // Classe vem como letra isolada (ex: linha "Score\tF" ou na tabela SCORE: "F  12  0")
+  const classeMatch = texto.match(/Score\s*\t?\s*([A-F])\b/i);
+  const classeExterna = classeMatch ? classeMatch[1].toUpperCase() : null;
+
+  // Tenta achar pontos numéricos reais na seção SCORE (tabela: Probabilidade / Classe / Período / Pontos / Tipo)
+  // Se a linha de dados não tiver um valor de pontos plausível (>0, tipicamente 3 dígitos), considera ausente.
+  let pontosExternos = null;
+  const linhaScoreDados = texto.match(/SCORE\s*\n[\s\S]{0,200}?\n([A-F]?\s*[\d.,%]*\s*\d*\s*\d*\s*\w*)\s*\n/i);
+  if (linhaScoreDados) {
+    const nums = linhaScoreDados[1].match(/\b\d{2,4}\b/g);
+    if (nums) {
+      const candidato = nums.find(n => parseInt(n) >= 0 && parseInt(n) <= 1000 && n.length >= 1);
+      // Heurística conservadora: só aceita se vier claramente identificado como "Pontos:" em algum lugar
+    }
+  }
+  const pontosDiretos = texto.match(/Pontos:?\s*\n?\s*(\d{1,4})\b/i);
+  if (pontosDiretos && parseInt(pontosDiretos[1]) > 0) pontosExternos = parseInt(pontosDiretos[1]);
+
+  const probMatch = texto.match(/Probabilidade de Inadimplência\(%\)[\s\S]{0,80}?\n([\d.,]+)/i);
+  const probInadimplencia = probMatch ? parseFloat(probMatch[1].replace(',', '.')) : 0;
+
+  const consultasMatch = texto.match(/Consultas Realizadas\s*\t*\s*([\d/]*)\s*\t*\s*([\d/]*)/i);
+  const consultasRealizadas = 0; // Protector PF geralmente não traz contagem direta, apenas datas — sem dado numérico confiável
+
+  const participacoes = [];
+  const partRegex = /([\d.\/-]{14,18})\s+(.+?)\s+SOCIO\s+(\d+)\s+([\d/]+)/gi;
+  let pm;
+  while ((pm = partRegex.exec(texto)) !== null) {
+    participacoes.push({ doc: pm[1].replace(/\D/g,''), razaoSocial: pm[2].trim(), percentual: parseFloat(pm[3]), dataEntrada: pm[4] });
+  }
+
+  return {
+    tipoPessoa: 'PF', fonte: 'PROTECTOR',
+    nome, documento, statusDocumento, dataNascimento,
+    inadimplenciasQtd, inadimplenciasVal, acoesQtd, acoesVal: 0, protestosQtd, protestosVal: 0,
+    chequesSemFundo, consultasRealizadas, probInadimplencia, classeExterna, pontosExternos,
+    tipoCliente: null, socios: [], grupoEconomico: [], participacoes,
+    capitalSocial: 0, dataAbertura: null, cnae: null, descricaoCnae: null, numFiliais: 0
+  };
+}
+
+// ============================================================
+// PARSER: SERASA (PJ e PF — estrutura de "cards" rotulados)
+// ============================================================
+function parseSerasa(texto, tipoPessoa) {
+  const nome = tipoPessoa === 'PJ'
+    ? getMatch(texto, /CNPJ:\s*[\d.\-\/]+\s*\|\s*(.+)/i)
+    : getMatch(texto, /Nome\s*\n?\s*(.+)/i) || getMatch(texto, /RELATÓRIO[\s\S]{0,40}\|\s*(.+)/i);
+
+  const docMatch = texto.match(/CNPJ:\s*([\d.\-\/]+)/i) || texto.match(/CPF:\s*([\d.\-\/]+)/i);
+  const documento = docMatch ? docMatch[1].replace(/\D/g, '') : null;
+
+  const statusDocumento = getMatch(texto, /Situação (?:na Receita Federal|Cadastral)\s*\n?\s*(ATIVA?|INATIVA?|BAIXADA?|SUSPENSA?)/i);
+
+  // Score Serasa: número 0-1000 seguido de "Risco X" — pega o primeiro que aparece junto ao rótulo "Risco"
+  const scoreMatch = texto.match(/\b(\d{1,4})\s+Risco\s+(baixo|médio|medio|alto|muito\s*baixo|muito\s*alto)/i);
+  const pontosExternos = scoreMatch ? parseInt(scoreMatch[1]) : null;
+  const rotuloRisco = scoreMatch ? scoreMatch[2] : null;
+
+  const probMatch = texto.match(/([\d.,]+)\s*\n?\s*Probabilidade de inadimplência/i);
+  const probInadimplencia = probMatch ? parseFloat(probMatch[1].replace(',', '.')) : 0;
+
+  const capitalSocial = getNumBR(texto, /Capital social\s*\n?\s*R?\$?\s*([\d.,]+)/i);
+  const fundacaoMatch = texto.match(/Funda[çc][ãa]o em\s*\n?\s*([\d/]+)/i);
+  const dataAbertura = fundacaoMatch ? fundacaoMatch[1] : null;
+  const cnae = getMatch(texto, /CNAE:\s*([\d]+)/i);
+  const descricaoRamo = getMatch(texto, /Ramo de atividade econômica:\s*(.+)/i) || getMatch(texto, /Ramo de atividade\s*\n?\s*(.+)/i);
+
+  // Restrições: PEFIN / REFIN / Dívidas vencidas / Protestos / Cheque — "Sem registros" = 0, qualquer outra coisa = presença de restrição
+  const contarRestricao = (label) => {
+    const re = new RegExp(label + '\\s*(?:info)?\\s*\\n?\\s*(.+)', 'i');
+    const m = texto.match(re);
+    if (!m) return 0;
+    return /sem registros?/i.test(m[1]) ? 0 : 1;
+  };
+  const pefin = contarRestricao('PEFIN');
+  const refin = contarRestricao('REFIN');
+  const dividasVencidas = contarRestricao('Dívidas vencidas');
+  const protestosQtd = contarRestricao('Protestos');
+  const chequeRestricao = contarRestricao('Cheque');
+
+  // Total de dívidas (resumo)
+  const totalDividas = getNumBR(texto, /Total de dívidas:\s*R?\$?\s*([\d.,]+)/i);
+
+  // Quadro societário (PJ) — "100% NOME CPF data - Não"
+  const socios = [];
+  if (tipoPessoa === 'PJ') {
+    const socioRegex = /(\d{1,3})%\s+(?:\d{1,3}%\s+)?([A-ZÀ-Ú][A-ZÀ-Ú\s]+?)\s+([\d.\-\/]{11,18})/g;
+    let sm;
+    while ((sm = socioRegex.exec(texto)) !== null) {
+      socios.push({ nome: sm[2].trim(), percentual: parseFloat(sm[1]), doc: sm[3].replace(/\D/g,'') });
     }
   }
 
-  return { razaoSocial, cnpj, nomeFantasia, capitalSocial, dataAbertura, cnae, descricaoCnae,
-    statusDocumento, numFiliais, tempoMercadoAnos, inadimplenciasQtd, inadimplenciasVal,
-    acoesQtd, acoesVal, protestosQtd, protestosVal, chequesSemFundo, consultasRealizadas,
-    probInadimplencia, classeExterna, pontosExternos, tipoCliente, socios, grupoEconomico };
+  return {
+    tipoPessoa, fonte: 'SERASA',
+    nome, documento, statusDocumento, capitalSocial, dataAbertura, cnae,
+    descricaoCnae: descricaoRamo, numFiliais: 0,
+    inadimplenciasQtd: dividasVencidas, inadimplenciasVal: totalDividas,
+    acoesQtd: 0, acoesVal: 0, protestosQtd, protestosVal: 0,
+    chequesSemFundo: chequeRestricao, consultasRealizadas: 0,
+    probInadimplencia, classeExterna: null, pontosExternos, rotuloRisco,
+    tipoCliente: null, socios, grupoEconomico: [],
+    pefin, refin
+  };
 }
 
-function classeBasePorScore(pontos) {
-  if (pontos >= 800) return 'A';
-  if (pontos >= 600) return 'B';
-  if (pontos >= 400) return 'C';
-  return 'D';
-}
-
+// ============================================================
+// CLASSIFICAÇÃO — réguas diferentes por fonte (Protector vs Serasa)
+// ============================================================
 const ORDEM_CLASSES = ['A', 'B', 'C', 'D', 'E'];
 function rebaixar(classe, niveis) {
   const idx = ORDEM_CLASSES.indexOf(classe);
   return ORDEM_CLASSES[Math.min(ORDEM_CLASSES.length - 1, idx + niveis)];
 }
 
+// Faixas oficiais do Protector, conforme Manual de Política Financeira: 0-399/400-599/600-799/800-1000
+function classeBaseProtector(pontos) {
+  if (pontos >= 800) return 'A';
+  if (pontos >= 600) return 'B';
+  if (pontos >= 400) return 'C';
+  return 'D';
+}
+
+// Faixas oficiais do Serasa Score (fonte: serasa.com.br): 0-300 Muito Baixo/Alto risco,
+// 301-500 Baixo/Regular, 501-700 Bom/Médio risco, 701-1000 Excelente/Baixo risco.
+// Mapeadas para A-E apenas para manter consistência visual com o resto do sistema.
+function classeBaseSerasa(pontos) {
+  if (pontos >= 701) return 'A';
+  if (pontos >= 501) return 'B';
+  if (pontos >= 301) return 'C';
+  return 'D';
+}
+
 function calcularClasseEDetalhes(d) {
   const detalhes = [];
+  const fonteLabel = d.fonte === 'SERASA' ? 'Serasa' : 'Protector';
+
   if (d.pontosExternos === null || d.pontosExternos === undefined) {
-    detalhes.push({ fator: 'Score Protector não identificado no relatório — classificação conservadora aplicada', impacto: 'Classe E' });
+    detalhes.push({ fator: `Score ${fonteLabel} não identificado no relatório — classificação conservadora aplicada`, impacto: 'Classe E' });
     return { classe: 'E', pontosExternos: null, detalhes };
   }
-  let classe = classeBasePorScore(d.pontosExternos);
-  detalhes.push({ fator: `Score Protector: ${d.pontosExternos} pontos (faixa oficial do manual)`, impacto: `Classe base ${classe}` });
 
-  if (d.statusDocumento && d.statusDocumento.toUpperCase() !== 'ATIVO') {
+  let classe = d.fonte === 'SERASA' ? classeBaseSerasa(d.pontosExternos) : classeBaseProtector(d.pontosExternos);
+  detalhes.push({ fator: `Score ${fonteLabel}: ${d.pontosExternos} pontos (faixa oficial)`, impacto: `Classe base ${classe}` });
+
+  if (d.statusDocumento && !/ATIV/i.test(d.statusDocumento)) {
     detalhes.push({ fator: `Situação cadastral: ${d.statusDocumento} (não ativa)`, impacto: 'Classe E — bloqueio' });
     return { classe: 'E', pontosExternos: d.pontosExternos, detalhes };
   }
 
-  const totalRestricoes = d.protestosQtd + d.acoesQtd + d.inadimplenciasQtd;
+  const totalRestricoes = (d.protestosQtd||0) + (d.acoesQtd||0) + (d.inadimplenciasQtd||0);
   if (totalRestricoes >= 2) {
     detalhes.push({ fator: `${totalRestricoes} ocorrências de protesto/ação/inadimplência`, impacto: 'Classe E — múltiplas restrições' });
     classe = 'E';
@@ -794,7 +1037,7 @@ function calcularClasseEDetalhes(d) {
 
   if (d.chequesSemFundo > 0) {
     const antes = classe; classe = rebaixar(classe, 1);
-    detalhes.push({ fator: `${d.chequesSemFundo} cheque(s) sem fundo`, impacto: `Rebaixado de ${antes} para ${classe}` });
+    detalhes.push({ fator: `Restrição de cheque identificada`, impacto: `Rebaixado de ${antes} para ${classe}` });
   }
   if (d.probInadimplencia >= 25) {
     const antes = classe; classe = rebaixar(classe, 1);
@@ -812,56 +1055,49 @@ function calcularPrazo(classe) {
 }
 
 function calcularConfianca(d) {
-  let preenchidos = 0; const total = 8;
-  if (d.razaoSocial) preenchidos++;
-  if (d.cnpj) preenchidos++;
-  if (d.capitalSocial > 0) preenchidos++;
-  if (d.dataAbertura) preenchidos++;
+  // Conforme visão de produto: 100% bureau completo, 85% parcial, 70% histórico interno, 50% manual
+  if (d.fonte === 'MANUAL') return { nivel: 'Baixa', pct: 50 };
+  let preenchidos = 0; const total = 6;
+  if (d.nome) preenchidos++;
+  if (d.documento) preenchidos++;
+  if (d.pontosExternos !== null && d.pontosExternos !== undefined) preenchidos++;
   if (d.probInadimplencia > 0) preenchidos++;
-  if (d.consultasRealizadas >= 0) preenchidos++;
-  if (d.socios.length > 0) preenchidos++;
   if (d.statusDocumento) preenchidos++;
+  if (d.dataAbertura || d.dataNascimento) preenchidos++;
   const pct = Math.round((preenchidos / total) * 100);
-  if (pct >= 90) return { nivel: 'Alta', pct };
-  if (pct >= 60) return { nivel: 'Média', pct };
-  return { nivel: 'Baixa', pct };
+  if (pct >= 90) return { nivel: 'Alta', pct: 100 };
+  if (pct >= 60) return { nivel: 'Média', pct: 85 };
+  return { nivel: 'Baixa', pct: 50 };
 }
 
 function gerarParecer(d, pontosExternos, classe, prazo) {
   const pontosPositivos = [], pontosAtencao = [], riscos = [];
+  const fonteLabel = d.fonte === 'SERASA' ? 'Serasa' : d.fonte === 'MANUAL' ? 'cadastro manual' : 'Protector';
 
-  if (d.protestosQtd === 0 && d.acoesQtd === 0 && d.inadimplenciasQtd === 0)
+  if ((d.protestosQtd||0) === 0 && (d.acoesQtd||0) === 0 && (d.inadimplenciasQtd||0) === 0)
     pontosPositivos.push('Ausência de protestos, ações judiciais e registros de inadimplência.');
   if (d.capitalSocial >= 500000)
     pontosPositivos.push(`Capital social elevado (R$ ${d.capitalSocial.toLocaleString('pt-BR', {minimumFractionDigits:2})}).`);
-  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos >= 10)
-    pontosPositivos.push(`Empresa consolidada no mercado há aproximadamente ${Math.floor(d.tempoMercadoAnos)} anos.`);
-  if (d.grupoEconomico.length > 0)
-    pontosPositivos.push(`Vinculada a grupo econômico identificado (${d.grupoEconomico.length} empresa(s) relacionada(s)).`);
-  if (d.statusDocumento && d.statusDocumento.toUpperCase() === 'ATIVO')
-    pontosPositivos.push('Situação cadastral do CNPJ ativa.');
+  if (d.statusDocumento && /ATIV/i.test(d.statusDocumento))
+    pontosPositivos.push('Situação cadastral ativa.');
+  if (d.tipoPessoa === 'PJ' && d.socios && d.socios.length > 0)
+    pontosPositivos.push(`Quadro societário identificado (${d.socios.length} sócio(s)).`);
 
   if (d.probInadimplencia >= 8 && d.probInadimplencia < 20)
     pontosAtencao.push(`Probabilidade de inadimplência em nível de atenção (${d.probInadimplencia.toFixed(2)}%).`);
-  if (d.consultasRealizadas > 50)
-    pontosAtencao.push(`Volume elevado de consultas recentes ao CNPJ (${d.consultasRealizadas}), pode indicar busca ativa por crédito em múltiplas fontes.`);
-  if (d.tipoCliente === 'NOVO')
-    pontosAtencao.push('Cliente novo, sem histórico de relacionamento prévio com a Rei-Fix.');
-  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos < 5 && d.tempoMercadoAnos >= 2)
-    pontosAtencao.push('Tempo de mercado ainda limitado (entre 2 e 5 anos).');
+  if (d.fonte === 'MANUAL')
+    pontosAtencao.push('Análise baseada em cadastro manual, sem consulta a bureau de crédito — confiabilidade reduzida.');
 
-  if (d.protestosQtd > 0) riscos.push(`${d.protestosQtd} protesto(s) registrado(s), totalizando R$ ${d.protestosVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}.`);
-  if (d.acoesQtd > 0) riscos.push(`${d.acoesQtd} ação(ões) judicial(is) registrada(s).`);
-  if (d.inadimplenciasQtd > 0) riscos.push(`${d.inadimplenciasQtd} registro(s) de inadimplência, totalizando R$ ${d.inadimplenciasVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}.`);
-  if (d.chequesSemFundo > 0) riscos.push(`${d.chequesSemFundo} cheque(s) sem fundo identificado(s).`);
+  if (d.protestosQtd > 0) riscos.push(`Restrição de protesto identificada.`);
+  if (d.inadimplenciasQtd > 0) riscos.push(`${d.inadimplenciasQtd} registro(s) de inadimplência${d.inadimplenciasVal ? `, totalizando R$ ${d.inadimplenciasVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}.`);
+  if (d.chequesSemFundo > 0) riscos.push(`Restrição de cheque identificada.`);
   if (d.probInadimplencia >= 20) riscos.push(`Probabilidade de inadimplência crítica (${d.probInadimplencia.toFixed(2)}%).`);
-  if (d.tempoMercadoAnos !== null && d.tempoMercadoAnos < 2) riscos.push('Empresa recém-aberta (menos de 2 anos), histórico insuficiente para avaliação robusta.');
 
   if (pontosPositivos.length === 0) pontosPositivos.push('Nenhum ponto positivo de destaque identificado nos dados informados.');
   if (pontosAtencao.length === 0) pontosAtencao.push('Nenhum ponto de atenção relevante identificado.');
   if (riscos.length === 0) riscos.push('Nenhum risco direto identificado nos registros consultados.');
 
-  const resumoExecutivo = `${d.razaoSocial || 'A empresa analisada'} apresenta score Protector de ${pontosExternos != null ? pontosExternos : 'não identificado'} pontos, classificada como Classe ${classe} conforme critérios da política financeira da Rei-Fix. ` +
+  const resumoExecutivo = `${d.nome || 'O(a) analisado(a)'} apresenta score ${fonteLabel} de ${pontosExternos != null ? pontosExternos : 'não identificado'} pontos, classificado(a) como Classe ${classe}. ` +
     `Sugere-se prazo de pagamento de ${prazo.texto}. ` +
     (classe === 'A' || classe === 'B' ? 'O perfil de crédito apresentado é favorável.' :
      classe === 'C' ? 'O perfil de crédito apresentado é moderado, recomenda-se acompanhamento.' :
@@ -870,29 +1106,44 @@ function gerarParecer(d, pontosExternos, classe, prazo) {
   return { resumoExecutivo, pontosPositivos, pontosAtencao, riscos };
 }
 
+// ============================================================
+// FUNÇÃO PRINCIPAL — detecta formato e roteia para o parser correto
+// ============================================================
 function analisarRelatorio(texto) {
-  const d = parseRelatorio(texto);
-  if (!d.razaoSocial || !d.cnpj) {
-    throw new Error('Não foi possível identificar Razão Social ou Documento (CNPJ) no texto. Verifique se o relatório está no formato esperado.');
+  const formato = detectarFormato(texto);
+  let d;
+
+  if (formato === 'PROTECTOR_PJ') d = parseProtectorPJ(texto);
+  else if (formato === 'PROTECTOR_PF') d = parseProtectorPF(texto);
+  else if (formato === 'SERASA_PJ') d = parseSerasa(texto, 'PJ');
+  else if (formato === 'SERASA_PF') d = parseSerasa(texto, 'PF');
+  else throw new Error('Não foi possível identificar o formato do relatório (Protector ou Serasa). Verifique se o texto foi colado corretamente.');
+
+  if (!d.nome || !d.documento) {
+    throw new Error('Não foi possível identificar Nome/Razão Social ou Documento (CPF/CNPJ) no texto colado.');
   }
+
   const { classe, pontosExternos, detalhes } = calcularClasseEDetalhes(d);
   const prazo = calcularPrazo(classe);
   const confianca = calcularConfianca(d);
   const parecer = gerarParecer(d, pontosExternos, classe, prazo);
 
   return {
-    razao_social: d.razaoSocial, cnpj: d.cnpj, nome_fantasia: d.nomeFantasia,
-    capital_social: d.capitalSocial, data_abertura: d.dataAbertura, status_documento: d.statusDocumento,
+    formato_detectado: formato, tipo_pessoa: d.tipoPessoa, fonte: d.fonte,
+    razao_social: d.nome, cnpj: d.documento, nome_fantasia: d.nomeFantasia || null,
+    capital_social: d.capitalSocial || 0, data_abertura: d.dataAbertura, status_documento: d.statusDocumento,
     score_protector: pontosExternos, classe_protector: d.classeExterna, classe_interna: classe,
     prazo_sugerido: prazo.texto, prazo_dias: prazo.dias, confianca: confianca.nivel, confianca_pct: confianca.pct,
-    probabilidade_inadimplencia: d.probInadimplencia, protestos: d.protestosQtd, acoes: d.acoesQtd,
-    inadimplencias: d.inadimplenciasQtd, cheques_sem_fundo: d.chequesSemFundo, consultas_realizadas: d.consultasRealizadas,
-    socios: d.socios, grupo_economico: d.grupoEconomico, detalhes_classificacao: detalhes,
+    probabilidade_inadimplencia: d.probInadimplencia, protestos: d.protestosQtd || 0, acoes: d.acoesQtd || 0,
+    inadimplencias: d.inadimplenciasQtd || 0, cheques_sem_fundo: d.chequesSemFundo || 0,
+    consultas_realizadas: d.consultasRealizadas || 0,
+    socios: d.socios || [], grupo_economico: d.grupoEconomico || [], detalhes_classificacao: detalhes,
     resumo_executivo: parecer.resumoExecutivo, pontos_positivos: parecer.pontosPositivos,
     pontos_atencao: parecer.pontosAtencao, riscos_identificados: parecer.riscos,
-    cnae: d.cnae, descricao_cnae: d.descricaoCnae, numero_filiais: d.numFiliais
+    cnae: d.cnae, descricao_cnae: d.descricaoCnae, numero_filiais: d.numFiliais || 0
   };
 }
+
 
 // ==================== NAVIGATION ====================
 function navigate(page) {
@@ -1213,39 +1464,49 @@ async function runAnalise() {
 }
 
 async function salvarAnalise(parsed, textoOriginal, responsavel) {
-  const cnpj = (parsed.cnpj || '').replace(/\D/g, '');
+  const documento = (parsed.cnpj || '').replace(/\D/g, '');
+  if (!documento) throw new Error('Documento (CNPJ/CPF) não identificado — não é possível salvar.');
+
   const clienteData = {
-    razao_social: parsed.razao_social || 'Desconhecido', cnpj,
+    razao_social: parsed.razao_social || 'Desconhecido', cnpj: documento,
     data_abertura: parsed.data_abertura ? converterDataBR(parsed.data_abertura) : null,
     capital_social: parsed.capital_social || null, cnae: parsed.cnae || null,
     descricao_cnae: parsed.descricao_cnae || null, status_receita: parsed.status_documento || 'ATIVO',
-    numero_filiais: parsed.numero_filiais || 0, socios: parsed.socios || []
+    numero_filiais: parsed.numero_filiais || 0, socios: parsed.socios || [],
+    tipo_pessoa: parsed.tipo_pessoa || 'PJ'
   };
 
-  const { data: clienteExist } = await db.from('clientes').select('id').eq('cnpj', cnpj).single();
+  const { data: clienteExist, error: errBusca } = await db.from('clientes').select('id').eq('cnpj', documento).maybeSingle();
+  if (errBusca) throw new Error('Erro ao buscar cliente: ' + errBusca.message);
+
   let clienteId;
   if (clienteExist) {
     clienteId = clienteExist.id;
-    await db.from('clientes').update({ ...clienteData, updated_at: new Date().toISOString() }).eq('id', clienteId);
+    const { error: errUpdate } = await db.from('clientes').update({ ...clienteData, updated_at: new Date().toISOString() }).eq('id', clienteId);
+    if (errUpdate) throw new Error('Erro ao atualizar cliente: ' + errUpdate.message);
   } else {
-    const { data: novo } = await db.from('clientes').insert(clienteData).select('id').single();
+    const { data: novo, error: errInsert } = await db.from('clientes').insert(clienteData).select('id').single();
+    if (errInsert) throw new Error('Erro ao cadastrar cliente: ' + errInsert.message);
     clienteId = novo?.id;
   }
 
-  await db.from('analises').insert({
-    cliente_id: clienteId, cnpj,
+  if (!clienteId) throw new Error('Não foi possível obter o ID do cliente após salvar.');
+
+  const { error: errAnalise } = await db.from('analises').insert({
+    cliente_id: clienteId, cnpj: documento,
     score_protector: parsed.score_protector, classe_protector: parsed.classe_protector,
     probabilidade_inadimplencia: parsed.probabilidade_inadimplencia,
     protestos: parsed.protestos || 0, acoes: parsed.acoes || 0, inadimplencias: parsed.inadimplencias || 0,
     cheques_sem_fundo: parsed.cheques_sem_fundo || 0, consultas_realizadas: parsed.consultas_realizadas || 0,
     classe_interna: parsed.classe_interna, risco: parsed.classe_interna,
     recomendacao: parsed.prazo_sugerido, prazo_sugerido: parsed.prazo_sugerido, prazo_dias: parsed.prazo_dias,
-    confianca: parsed.confianca,
+    confianca: parsed.confianca, fonte_dados: parsed.fonte || 'PROTECTOR',
     pontos_positivos: (parsed.pontos_positivos||[]).join('\n- '), pontos_atencao: (parsed.pontos_atencao||[]).join('\n- '),
     riscos_identificados: (parsed.riscos_identificados||[]).join('\n- '), parecer_completo: parsed.resumo_executivo,
     detalhes_classificacao: parsed.detalhes_classificacao,
     dados_brutos: textoOriginal.substring(0, 2000), usuario_responsavel: responsavel
   });
+  if (errAnalise) throw new Error('Erro ao salvar análise: ' + errAnalise.message);
 }
 
 function converterDataBR(dataBR) {
@@ -1316,6 +1577,182 @@ function renderResultado(d) {
       <button class="btn btn-secondary btn-sm" onclick="navigate('analises')">📋 Ver todas as análises</button>
       <button class="btn btn-secondary btn-sm" onclick="document.getElementById('relatorioTexto').value='';document.getElementById('analiseResult').innerHTML='<div class=empty><div style=font-size:48px;margin-bottom:12px>📄</div><div>Nova análise</div></div>'">🔄 Nova Análise</button>
     </div>
+  `;
+}
+
+// ==================== MODO MANUAL (cadastro sem bureau) ====================
+function selecionarModoAnalise(modo) {
+  const bureauBtn = document.getElementById('modoBureauBtn');
+  const manualBtn = document.getElementById('modoManualBtn');
+  if (modo === 'bureau') {
+    document.getElementById('modoBureau').style.display = '';
+    document.getElementById('modoManual').style.display = 'none';
+    bureauBtn.style.background = 'var(--blue2)'; bureauBtn.style.color = '#fff'; bureauBtn.className = 'btn flex-1';
+    manualBtn.className = 'btn btn-secondary flex-1'; manualBtn.style.background = ''; manualBtn.style.color = '';
+  } else {
+    document.getElementById('modoBureau').style.display = 'none';
+    document.getElementById('modoManual').style.display = '';
+    manualBtn.style.background = 'var(--blue2)'; manualBtn.style.color = '#fff'; manualBtn.className = 'btn flex-1';
+    bureauBtn.className = 'btn btn-secondary flex-1'; bureauBtn.style.background = ''; bureauBtn.style.color = '';
+  }
+}
+
+// Motor de score do Cadastro Manual — totalmente baseado em regras simples e transparentes,
+// pensado para casos sem bureau de crédito disponível. Confiabilidade fixa em 50% (definida
+// no documento de visão do produto), por ser a fonte de dados menos completa do sistema.
+function calcularClasseManual(m) {
+  const detalhes = [];
+  let pontos = 0; // pontuação interna 0-100, só para fins de classificação A-E, não comparável ao score de bureau
+
+  if (m.tempoMercadoAnos >= 5) { pontos += 20; detalhes.push({ fator: `Tempo de mercado: ${m.tempoMercadoAnos} anos`, impacto: '+20' }); }
+  else if (m.tempoMercadoAnos >= 2) { pontos += 10; detalhes.push({ fator: `Tempo de mercado: ${m.tempoMercadoAnos} anos`, impacto: '+10' }); }
+  else { detalhes.push({ fator: `Tempo de mercado: ${m.tempoMercadoAnos} anos (empresa nova)`, impacto: '+0' }); }
+
+  if (m.clienteAtual) {
+    if (m.qtdAtrasos === 0) { pontos += 20; detalhes.push({ fator: 'Cliente atual sem atrasos', impacto: '+20' }); }
+    else if (m.qtdAtrasos <= 2 && m.maiorAtraso <= 10) { pontos += 8; detalhes.push({ fator: `Cliente atual com ${m.qtdAtrasos} atraso(s) leve(s)`, impacto: '+8' }); }
+    else { detalhes.push({ fator: `Cliente atual com ${m.qtdAtrasos} atraso(s), maior de ${m.maiorAtraso} dias`, impacto: '+0' }); }
+  } else {
+    detalhes.push({ fator: 'Cliente novo, sem histórico interno', impacto: '+0' });
+  }
+
+  if (m.referenciasPositivas >= 3) { pontos += 15; detalhes.push({ fator: `${m.referenciasPositivas} referências comerciais positivas`, impacto: '+15' }); }
+  else if (m.referenciasPositivas >= 1) { pontos += 8; detalhes.push({ fator: `${m.referenciasPositivas} referência(s) comercial(is) positiva(s)`, impacto: '+8' }); }
+
+  if (m.estrutura === 'Boa') { pontos += 10; detalhes.push({ fator: 'Estrutura da empresa avaliada como boa', impacto: '+10' }); }
+  else if (m.estrutura === 'Precária') { detalhes.push({ fator: 'Estrutura da empresa avaliada como precária', impacto: '+0' }); }
+
+  if (m.visitaComercial) { pontos += 10; detalhes.push({ fator: 'Visita comercial realizada', impacto: '+10' }); }
+
+  if (m.avaliacaoComercial === 'Bom') { pontos += 15; detalhes.push({ fator: 'Avaliação comercial geral: Bom', impacto: '+15' }); }
+  else if (m.avaliacaoComercial === 'Médio') { pontos += 5; detalhes.push({ fator: 'Avaliação comercial geral: Médio', impacto: '+5' }); }
+  else { detalhes.push({ fator: 'Avaliação comercial geral: Ruim', impacto: '+0' }); }
+
+  if (m.capitalSocial >= 500000) { pontos += 10; detalhes.push({ fator: 'Capital social elevado', impacto: '+10' }); }
+
+  // Classificação base pela pontuação acumulada (0-100)
+  let classe;
+  if (pontos >= 75) classe = 'A';
+  else if (pontos >= 55) classe = 'B';
+  else if (pontos >= 35) classe = 'C';
+  else classe = 'D';
+
+  // Restrições conhecidas = bloqueio ou rebaixamento, igual ao motor de bureau (conservador)
+  if (m.inadimplencia || m.protesto) {
+    detalhes.push({ fator: m.inadimplencia ? 'Inadimplência ativa declarada' : 'Protesto declarado', impacto: 'Classe E — bloqueio' });
+    classe = 'E';
+  } else if (m.acao || m.pendencia || m.devolucoes || m.titulosAberto) {
+    const antes = classe;
+    classe = rebaixar(classe, 1);
+    detalhes.push({ fator: 'Restrição declarada (ação/pendência/devolução/título em aberto)', impacto: `Rebaixado de ${antes} para ${classe}` });
+  }
+
+  return { classe, pontos, detalhes };
+}
+
+async function runAnaliseManual() {
+  const razaoSocial = document.getElementById('manRazaoSocial').value.trim();
+  const documento = document.getElementById('manDocumento').value.replace(/\D/g, '');
+  const responsavel = document.getElementById('manResponsavel').value || 'Analista';
+
+  if (!razaoSocial || !documento) { toast('Preencha Razão Social/Nome e CNPJ/CPF.', 'error'); return; }
+
+  const m = {
+    tempoMercadoAnos: parseFloat(document.getElementById('manTempoMercado').value) || 0,
+    capitalSocial: parseFloat(document.getElementById('manCapitalSocial').value) || 0,
+    faturamento: document.getElementById('manFaturamento').value,
+    clienteAtual: document.getElementById('manClienteAtual').checked,
+    qtdAtrasos: parseInt(document.getElementById('manQtdAtrasos').value) || 0,
+    maiorAtraso: parseInt(document.getElementById('manMaiorAtraso').value) || 0,
+    inadimplencia: document.getElementById('manInadimplencia').checked,
+    devolucoes: document.getElementById('manDevolucoes').checked,
+    titulosAberto: document.getElementById('manTitulosAberto').checked,
+    referenciasPositivas: parseInt(document.getElementById('manReferenciasPositivas').value) || 0,
+    estrutura: document.getElementById('manEstrutura').value,
+    visitaComercial: document.getElementById('manVisitaComercial').checked,
+    avaliacaoComercial: document.getElementById('manAvaliacaoComercial').value,
+    protesto: document.getElementById('manProtesto').checked,
+    acao: document.getElementById('manAcao').checked,
+    pendencia: document.getElementById('manPendencia').checked,
+    observacoes: document.getElementById('manObs').value
+  };
+
+  const { classe, pontos, detalhes } = calcularClasseManual(m);
+  const prazo = calcularPrazo(classe);
+
+  const pontosPositivos = [], pontosAtencao = [], riscos = [];
+  if (m.clienteAtual && m.qtdAtrasos === 0) pontosPositivos.push('Cliente atual sem histórico de atrasos.');
+  if (m.referenciasPositivas > 0) pontosPositivos.push(`${m.referenciasPositivas} referência(s) comercial(is) positiva(s).`);
+  if (m.tempoMercadoAnos >= 5) pontosPositivos.push(`Tempo de mercado de ${m.tempoMercadoAnos} anos.`);
+  if (pontosPositivos.length === 0) pontosPositivos.push('Nenhum ponto positivo de destaque identificado.');
+
+  pontosAtencao.push('Análise baseada em cadastro manual, sem consulta a bureau de crédito — confiabilidade de 50%.');
+  if (!m.clienteAtual) pontosAtencao.push('Cliente novo, sem histórico de relacionamento prévio.');
+
+  if (m.inadimplencia) riscos.push('Inadimplência ativa declarada pelo analista.');
+  if (m.protesto) riscos.push('Protesto declarado pelo analista.');
+  if (m.acao) riscos.push('Ação judicial declarada pelo analista.');
+  if (m.pendencia) riscos.push('Pendência declarada pelo analista.');
+  if (riscos.length === 0) riscos.push('Nenhum risco declarado pelo analista.');
+
+  const resumoExecutivo = `${razaoSocial} foi avaliado(a) via cadastro manual (sem bureau de crédito), obtendo pontuação interna de ${pontos}/100, classificado(a) como Classe ${classe}. ` +
+    `Sugere-se prazo de pagamento de ${prazo.texto}. Esta análise tem confiabilidade reduzida (50%) por não utilizar dados de bureau externo.`;
+
+  const parsed = {
+    razao_social: razaoSocial, cnpj: documento, tipo_pessoa: documento.length === 11 ? 'PF' : 'PJ',
+    fonte: 'MANUAL', capital_social: m.capitalSocial, data_abertura: null, status_documento: 'ATIVO',
+    score_protector: null, classe_protector: null, classe_interna: classe,
+    prazo_sugerido: prazo.texto, prazo_dias: prazo.dias, confianca: 'Baixa', confianca_pct: 50,
+    probabilidade_inadimplencia: 0, protestos: m.protesto ? 1 : 0, acoes: m.acao ? 1 : 0,
+    inadimplencias: m.inadimplencia ? 1 : 0, cheques_sem_fundo: 0, consultas_realizadas: 0,
+    socios: [], grupo_economico: [], detalhes_classificacao: detalhes,
+    resumo_executivo: resumoExecutivo, pontos_positivos: pontosPositivos,
+    pontos_atencao: pontosAtencao, riscos_identificados: riscos,
+    cnae: null, descricao_cnae: null, numero_filiais: 0
+  };
+
+  try {
+    await salvarAnalise(parsed, JSON.stringify(m), responsavel);
+    document.getElementById('analiseManualResult').innerHTML = document.getElementById('analiseResult') ? '' : '';
+    renderResultadoManual(parsed, pontos);
+    toast('Análise manual concluída e salva!', 'success');
+  } catch(e) {
+    console.error(e);
+    toast('Erro ao salvar: ' + e.message, 'error');
+  }
+}
+
+function renderResultadoManual(d, pontosInternos) {
+  document.getElementById('analiseManualResult').innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div><div style="font-size:16px;font-weight:700">${d.razao_social}</div><div class="text-muted">${d.cnpj}</div></div>
+      ${confGauge(d.confianca)}
+    </div>
+    <div class="grid-3" style="margin-bottom:16px">
+      <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
+        <div style="font-size:24px;font-weight:800">${pontosInternos}/100</div>
+        <div class="text-muted" style="font-size:11px">Pontuação Manual</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
+        <div style="margin-bottom:6px">${classBadge(d.classe_interna)}</div>
+        <div class="text-muted" style="font-size:11px">Classe Rei-Fix</div>
+      </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
+        <div style="margin-bottom:6px">${recBadge(d.prazo_sugerido)}</div>
+        <div class="text-muted" style="font-size:11px">Prazo Recomendado</div>
+      </div>
+    </div>
+    <div class="parecer-section">
+      <div class="parecer-title" style="color:var(--blue)">🧮 Como a Classificação Foi Calculada</div>
+      <ul class="parecer-list">${d.detalhes_classificacao.map(x => `<li>${x.fator} → <strong>${x.impacto}</strong></li>`).join('')}</ul>
+    </div>
+    <div class="parecer-section"><div class="parecer-title" style="color:var(--green)">✅ Pontos Positivos</div><ul class="parecer-list">${d.pontos_positivos.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="parecer-section"><div class="parecer-title" style="color:var(--amber)">⚠️ Pontos de Atenção</div><ul class="parecer-list">${d.pontos_atencao.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="parecer-section"><div class="parecer-title" style="color:var(--red)">🚨 Riscos Identificados</div><ul class="parecer-list">${d.riscos_identificados.map(p=>`<li>${p}</li>`).join('')}</ul></div>
+    <div class="parecer-section" style="border-left:3px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0">
+      <div class="parecer-title" style="color:var(--blue)">📋 Parecer Executivo</div><div class="parecer-text">${d.resumo_executivo}</div>
+    </div>
+    <button class="btn btn-secondary btn-sm mt-12" onclick="navigate('analises')">📋 Ver todas as análises</button>
   `;
 }
 
