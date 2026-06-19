@@ -208,11 +208,7 @@ select option{background:var(--bg2)}
     <div class="topbar-right">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" id="globalSearch" placeholder="Buscar cliente ou CNPJ...">
-      </div>
-      <div class="user-badge">
-        <div class="user-avatar">ES</div>
-        <div>Ezequiel Silva<br><span class="text-muted" style="font-size:10.5px">Financeiro</span></div>
+        <input type="text" id="globalSearch" placeholder="Buscar cliente ou CNPJ..." onkeydown="if(event.key==='Enter') buscarClienteGlobal(this.value)">
       </div>
     </div>
   </div>
@@ -228,7 +224,6 @@ select option{background:var(--bg2)}
 
       <div class="sidebar-section" style="margin-top:14px">Gestão</div>
       <div class="nav-item" onclick="navigate('excecoes')"><span class="nav-icon">⚠️</span> Exceções Comerciais</div>
-      <div class="nav-item" onclick="navigate('retencoes')"><span class="nav-icon">🔁</span> Retenções</div>
       <div class="nav-item" onclick="navigate('negativacoes')"><span class="nav-icon">🚫</span> Negativação</div>
       <div class="nav-item" onclick="navigate('decisoes')"><span class="nav-icon">🗂️</span> Histórico de Decisões</div>
 
@@ -253,6 +248,9 @@ select option{background:var(--bg2)}
             <div class="page-sub">Análise de Crédito e Risco Comercial · <span id="dashDate"></span></div>
           </div>
           <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">🔄 Atualizar</button>
+        </div>
+        <div class="text-muted" style="font-size:11.5px;margin:-8px 0 16px 0">
+          Estes indicadores medem decisões de crédito tomadas (taxa de aprovação/reprovação, distribuição de classe, prazo concedido). Não incluem taxa de inadimplência real, DSO ou aging da carteira — esses exigem rastrear se o cliente pagou em dia depois da análise, o que o sistema ainda não registra.
         </div>
 
         <div class="grid-6 mb-16" id="dashKPIs">
@@ -295,17 +293,14 @@ select option{background:var(--bg2)}
             <div id="riskDist" style="display:flex;flex-direction:column;gap:8px;margin-top:12px"></div>
           </div>
           <div class="card">
-            <div class="card-title"><div class="card-title-text">📉 Evolução dos Scores (Média)</div></div>
-            <div class="chart-container sm"><canvas id="evolScoreChart"></canvas></div>
-            <div class="text-muted" style="font-size:11px;text-align:center;margin-top:8px">Quanto maior o score, menor o risco</div>
+            <div class="card-title"><div class="card-title-text">📅 Análises por Mês</div></div>
+            <div class="chart-container sm"><canvas id="analisesMesChart"></canvas></div>
+            <div class="text-muted" style="font-size:11px;text-align:center;margin-top:8px">Últimos 6 meses</div>
           </div>
           <div class="card">
-            <div class="card-title"><div class="card-title-text">🔍 Consultas nos Últimos 90 Dias</div></div>
-            <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">
-              <div style="font-size:26px;font-weight:800" id="consultas90Total">—</div>
-              <div class="text-muted" style="font-size:12px">total de consultas</div>
-            </div>
-            <div class="chart-container sm"><canvas id="consultas90Chart"></canvas></div>
+            <div class="card-title"><div class="card-title-text">⚠️ Concentração de Risco (Top 5)</div></div>
+            <div id="concentracaoRisco" style="display:flex;flex-direction:column;gap:8px;margin-top:4px"></div>
+            <div class="text-muted" style="font-size:11px;margin-top:8px">% do limite total sugerido — concentração alta (&gt;40% nos 5 maiores) é sinal de atenção</div>
           </div>
         </div>
 
@@ -338,23 +333,27 @@ select option{background:var(--bg2)}
         </div>
 
         <div class="card mt-16">
-          <div class="card-title">📦 Resumo da Carteira</div>
+          <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+            <span>📦 Resumo da Carteira</span>
+            <a href="#" onclick="navigate('carteira');return false" style="font-size:12px;font-weight:600">Ver carteira completa →</a>
+          </div>
           <div class="grid-4" id="resumoCarteira">
-            <div style="text-align:center">
+            <div style="text-align:center;cursor:pointer" onclick="navigate('carteira')">
               <div class="kpi-value" id="rc-valor" style="font-size:20px">—</div>
               <div class="text-muted" style="font-size:11.5px;margin-top:4px">Valor Total Analisado</div>
             </div>
-            <div style="text-align:center">
+            <div style="text-align:center;cursor:pointer" onclick="navigate('carteira')">
               <div class="kpi-value" id="rc-limite" style="font-size:20px">—</div>
               <div class="text-muted" style="font-size:11.5px;margin-top:4px">Limite Total Sugerido</div>
             </div>
-            <div style="text-align:center">
+            <div style="text-align:center;cursor:pointer" onclick="navigate('carteira')">
               <div class="kpi-value" id="rc-limite-medio" style="font-size:20px">—</div>
               <div class="text-muted" style="font-size:11.5px;margin-top:4px">Limite Médio por Cliente</div>
             </div>
-            <div style="text-align:center">
+            <div style="text-align:center;cursor:pointer" id="rc-maior-box">
               <div class="kpi-value" id="rc-maior" style="font-size:20px">—</div>
               <div class="text-muted" style="font-size:11.5px;margin-top:4px">Maior Limite Sugerido</div>
+              <div class="text-muted" id="rc-maior-nome" style="font-size:10.5px;color:var(--blue)">—</div>
             </div>
           </div>
         </div>
@@ -398,6 +397,12 @@ select option{background:var(--bg2)}
             <div class="form-group">
               <label>Responsável pela Análise</label>
               <input type="text" id="analiseResponsavel" value="Ezequiel Silva">
+            </div>
+            <div class="form-group">
+              <label>Correções manuais (opcional)</label>
+              <div class="text-muted" style="font-size:11px;margin-bottom:6px">Use se algum dado não saiu certo do texto (documento incompleto, score sem número, protesto não capturado, etc). Escolha o campo e digite o valor certo — ele sobrescreve o que vier do texto, e fica registrado no parecer.</div>
+              <div id="correcoesManuaisList"></div>
+              <button type="button" class="btn btn-secondary btn-sm mt-8" onclick="adicionarLinhaCorrecaoManual()">➕ Adicionar correção</button>
             </div>
             <div style="display:flex;gap:10px">
               <button class="btn btn-primary flex-1" onclick="runAnalise()" id="btnAnalise">⚙️ Analisar Relatório</button>
@@ -511,8 +516,8 @@ select option{background:var(--bg2)}
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Cliente / CNPJ</th><th>Score Protector</th><th>Classe</th><th>Prob. Inad.</th><th>Prazo Sugerido</th><th>Confiança</th><th>Data</th><th>Ações</th></tr></thead>
-              <tbody id="analisesList"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
+              <thead><tr><th>Cliente / CNPJ</th><th>Score Protector</th><th>Classe</th><th>Prob. Inad.</th><th>Prazo Sugerido</th><th>Confiança</th><th>Responsável</th><th>Data</th><th>Ações</th></tr></thead>
+              <tbody id="analisesList"><tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text3)">Carregando...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -541,8 +546,8 @@ select option{background:var(--bg2)}
           <div class="alert alert-info">ℹ️ Recomendado quando há indícios de risco: baixa pontuação, inadimplência, excesso de consultas ou inconsistências cadastrais.</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Cliente</th><th>Fornecedor Consultado</th><th>Tempo de Relacionamento</th><th>Pontualidade</th><th>Classificação</th><th>Data</th></tr></thead>
-              <tbody id="referenciasList"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr></tbody>
+              <thead><tr><th>Cliente</th><th>Fornecedor Consultado</th><th>Tempo de Relacionamento</th><th>Pontualidade</th><th>Classificação</th><th>Data</th><th>Ações</th></tr></thead>
+              <tbody id="referenciasList"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -564,27 +569,14 @@ select option{background:var(--bg2)}
         </div>
       </div>
 
-      <!-- ===================== RETENÇÕES ===================== -->
-      <div class="page" id="page-retencoes">
-        <div class="page-header"><div><div class="page-title">Retenções</div><div class="page-sub">Pontuação adicional retida por análise de parâmetros decisórios</div></div></div>
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Cliente</th><th>Motivo da Retenção</th><th>Parâmetro</th><th>Status</th><th>Data</th></tr></thead>
-              <tbody id="retencoesList"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma retenção registrada</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <!-- ===================== NEGATIVAÇÕES ===================== -->
       <div class="page" id="page-negativacoes">
-        <div class="page-header"><div><div class="page-title">Controle de Negativação</div><div class="page-sub">Acompanhamento de inadimplências e cobranças</div></div></div>
+        <div class="page-header"><div><div class="page-title">Controle de Negativação</div><div class="page-sub">Acompanhamento de inadimplências e cobranças</div></div><button class="btn btn-primary btn-sm" onclick="openNegativacaoModal()">➕ Nova Negativação</button></div>
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Cliente</th><th>Valor</th><th>Status</th><th>Data</th><th>Observação</th></tr></thead>
-              <tbody id="negativacoesList"><tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr></tbody>
+              <thead><tr><th>Cliente</th><th>Valor</th><th>Status</th><th>Data</th><th>Observação</th><th>Ações</th></tr></thead>
+              <tbody id="negativacoesList"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -645,31 +637,41 @@ select option{background:var(--bg2)}
       <!-- ===================== RELATÓRIOS GERENCIAIS ===================== -->
       <div class="page" id="page-relatorios">
         <div class="page-header"><div><div class="page-title">Relatórios Gerenciais</div><div class="page-sub">Exportação de dados consolidados</div></div></div>
+        <div class="card mb-16">
+          <div class="card-title">📋 Lista de Análises</div>
+          <div class="text-muted" style="font-size:12.5px;margin-bottom:12px">Exporta todas as análises já salvas (cliente, score, classe, prazo, restrições e responsável) em CSV — abre direto no Excel.</div>
+          <button class="btn btn-primary btn-sm" onclick="exportarAnalisesCSV()">⬇️ Exportar Análises (CSV)</button>
+        </div>
         <div class="card">
           <div class="empty">
             <div style="font-size:40px;margin-bottom:12px">🧾</div>
-            <div>Exportação de relatórios em desenvolvimento</div>
-            <div class="text-muted mt-12">Em breve: exportação em PDF/Excel das análises, carteira e auditoria</div>
+            <div>Mais exportações em desenvolvimento</div>
+            <div class="text-muted mt-12">Em breve: carteira de risco e auditoria</div>
           </div>
         </div>
       </div>
 
       <!-- ===================== PARÂMETROS DE CRÉDITO ===================== -->
       <div class="page" id="page-parametros">
-        <div class="page-header"><div><div class="page-title">Parâmetros de Crédito</div><div class="page-sub">Critérios da Política Financeira aplicados pelo motor de análise</div></div></div>
+        <div class="page-header"><div><div class="page-title">Parâmetros de Crédito</div><div class="page-sub">Política configurável: faixas de pontos, classe e prazo aplicados pelo motor de análise</div></div></div>
         <div class="card mb-16">
-          <div class="card-title">📐 Faixas de Score Protector → Classe</div>
+          <div class="card-title">📐 Faixas de Pontos → Classe → Prazo</div>
+          <div style="display:flex;gap:8px;margin:12px 0">
+            <button class="btn btn-sm" id="parFonteBtnPROTECTOR" onclick="selecionarFontePolitica('PROTECTOR')">Protector</button>
+            <button class="btn btn-secondary btn-sm" id="parFonteBtnSERASA" onclick="selecionarFontePolitica('SERASA')">Serasa</button>
+          </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Faixa de Pontos</th><th>Classe Base</th><th>Prazo Sugerido</th></tr></thead>
-              <tbody>
-                <tr><td>800 – 1000</td><td><span class="badge badge-a">🟢 A</span></td><td>30 dias</td></tr>
-                <tr><td>600 – 799</td><td><span class="badge badge-b">🔵 B</span></td><td>21-28 dias</td></tr>
-                <tr><td>400 – 599</td><td><span class="badge badge-c">🟡 C</span></td><td>14-21 dias</td></tr>
-                <tr><td>0 – 399</td><td><span class="badge badge-d">🟠 D</span></td><td>7 dias</td></tr>
-              </tbody>
+              <thead><tr><th>Pontos mín.</th><th>Pontos máx.</th><th>Classe</th><th>Prazo (dias)</th><th>Prazo (texto exibido)</th><th>Ações</th></tr></thead>
+              <tbody id="parametrosFaixasList"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)">Carregando...</td></tr></tbody>
             </table>
           </div>
+          <button class="btn btn-primary btn-sm mt-12" onclick="adicionarFaixaPolitica()">➕ Nova Faixa</button>
+        </div>
+        <div class="card mb-16">
+          <div class="card-title">🔴 Classe E — rebaixamento (não nasce de faixa de pontos)</div>
+          <div class="text-muted" style="margin-bottom:8px;font-size:12px">Aplicada quando há situação cadastral irregular, 2+ restrições, ou quando o bureau manda só a letra "F" sem pontos numéricos.</div>
+          <div id="parametrosClasseE">Carregando...</div>
         </div>
         <div class="card">
           <div class="card-title">⚠️ Regras de Rebaixamento (sempre conservador)</div>
@@ -679,6 +681,7 @@ select option{background:var(--bg2)}
             <li>Cheque sem fundo identificado → rebaixa 1 classe</li>
             <li>Probabilidade de inadimplência ≥ 25% → rebaixa 1 classe</li>
             <li>Situação cadastral diferente de ATIVO → Classe E direto (bloqueio)</li>
+            <li>Classe informada em letra pelo bureau (ex: "F") sem pontos numéricos → essa letra é a decisão final, sem rebaixamento adicional por cima</li>
           </ul>
         </div>
       </div>
@@ -733,6 +736,36 @@ select option{background:var(--bg2)}
   </div>
 </div>
 
+<div class="modal-bg" id="modalNegativacao">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nova Negativação</div>
+      <button class="close-btn" onclick="closeModal('modalNegativacao')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Cliente (CNPJ)</label><input type="text" id="negCnpj" placeholder="00.000.000/0000-00"></div>
+      <div class="form-group"><label>Valor (R$)</label><input type="text" id="negValor" placeholder="Ex: 15000,00"></div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="negStatus">
+          <option value="Em atraso">Em atraso</option>
+          <option value="Cobrança">Cobrança</option>
+          <option value="Protestado">Protestado</option>
+          <option value="Negativado">Negativado</option>
+          <option value="Acordo">Acordo</option>
+          <option value="Regularizado">Regularizado</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Data da Ocorrência</label><input type="date" id="negData"></div>
+      <div class="form-group"><label>Observação</label><textarea id="negObs" style="min-height:100px;font-family:inherit;font-size:13px" placeholder="Detalhes adicionais..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalNegativacao')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNegativacao()">💾 Salvar Negativação</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL REFERÊNCIA COMERCIAL -->
 <div class="modal-bg" id="modalReferencia">
   <div class="modal">
@@ -775,6 +808,16 @@ const SUPABASE_URL = 'https://izvivcgwekzjbvvkcsrz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_EMmnH6sy-M97rLlWEtkmKQ_HWIY2uMj';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Cache em memória da Política de Crédito (faixas de pontos/classe/prazo, configuráveis em Parâmetros de Crédito).
+// Carregado no boot e recarregado sempre que algo é editado na tela de Parâmetros.
+let POLITICA_CACHE = [];
+async function carregarPoliticaCredito() {
+  try {
+    const { data, error } = await db.from('politica_credito_faixas').select('*').order('ordem');
+    if (!error) POLITICA_CACHE = data || [];
+  } catch (e) { console.error('Falha ao carregar política de crédito, usando valores padrão de segurança.', e); }
+}
 
 // ============================================================
 // MOTOR DE ANÁLISE DE CRÉDITO REI-FIX v2 — SEM IA, MULTI-FORMATO
@@ -819,19 +862,28 @@ function parseProtectorPJ(texto) {
   const statusDocumento = getMatch(texto, /Status Documento:\s*(.+)/i);
   const numFiliais = getNumBR(texto, /Número de Filiais:\s*(\d+)/i);
 
-  const inadimplenciasQtd = getNumBR(texto, /Registros de Inadimplência:\s*(\d+)/i);
-  const inadimplenciasVal = getNumBR(texto, /Registros de Inadimplência:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const acoesQtd = getNumBR(texto, /Ações:\s*(\d+)/i);
-  const acoesVal = getNumBR(texto, /Ações:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const protestosQtd = getNumBR(texto, /Protestos:\s*(\d+)/i);
-  const protestosVal = getNumBR(texto, /Protestos:\s*\d+\s*\|\s*R?\$?\s*([\d.,]+)/i);
-  const chequesSemFundo = getNumBR(texto, /Cheques Sem Fundos:\s*(\d+)/i);
-  const consultasRealizadas = getNumBR(texto, /Consultas Realizadas:\s*(\d+)/i);
+  // Aceita tanto "Label: 2" (formato com dois-pontos) quanto "Label [tab] 2 [tab] data [tab] data [tab] valor"
+  // (formato de tabela do QUADRO DE RESUMO, que é o formato real observado em relatórios Protector PJ).
+  const inadimplenciasQtd = getNumBR(texto, /Registros de Inadimplência\s*[:\t]\s*(\d+)/i);
+  const inadimplenciasVal = getNumBR(texto, /Registros de Inadimplência[\s\S]{0,150}?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+  const acoesQtd = getNumBR(texto, /Ações\s*[:\t]\s*(\d+)/i);
+  const acoesVal = getNumBR(texto, /Ações\s*[:\t][\s\S]{0,150}?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+  const protestosQtd = getNumBR(texto, /Protestos\s*[:\t]\s*(\d+)/i);
+  const protestosVal = getNumBR(texto, /Protestos[\s\S]{0,150}?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+  const chequesSemFundo = getNumBR(texto, /Cheques Sem Fundos\s*[:\t]\s*(\d+)/i);
+  const consultasRealizadas = getNumBR(texto, /Consultas Realizadas\s*[:\t]\s*(\d+)/i);
 
   const probInadimplencia = getNumBR(texto, /Probabilidade de Inadimplência:\s*([\d.,]+)\s*%/i);
-  const classeExterna = getMatch(texto, /Classe:\s*([A-F])/i);
+  // Classe-letra (A-F) do bureau: aceita "Classe: F" (formato antigo), "Score [tab] F" (QUADRO DE RESUMO)
+  // e o padrão de linha da tabela SCORE "F [tab] 12 [tab] 0" (letra seguida de período e pontos).
+  const classeExterna = getMatch(texto, /\bScore\s*[:\t]\s*([A-F])\b/i)
+    || getMatch(texto, /Classe\s*[:\t]\s*([A-F])\b/i)
+    || getMatch(texto, /\b([A-F])\t\d{1,3}\t\d{1,4}\b/);
+  // Pontos numéricos: aceita "Pontos: 956" (formato com dois pontos) e também "score: 956"
+  // (visto em relatório real — o valor da célula "Pontos" da tabela vem como esse texto, não como número puro).
   const matchPontos = texto.match(/SCORE[\s\S]{0,200}?Pontos:\s*(\d+)/i);
-  const pontosExternos = matchPontos ? parseInt(matchPontos[1]) : null;
+  const matchPontosScoreTexto = texto.match(/SCORE[\s\S]{0,300}?\bscore\s*:\s*(\d{1,4})\b/i);
+  const pontosExternos = matchPontos ? parseInt(matchPontos[1]) : (matchPontosScoreTexto ? parseInt(matchPontosScoreTexto[1]) : null);
   const tipoCliente = getMatch(texto, /Tipo:\s*(\w+)/i);
 
   const socios = [];
@@ -989,22 +1041,34 @@ function rebaixar(classe, niveis) {
   return ORDEM_CLASSES[Math.min(ORDEM_CLASSES.length - 1, idx + niveis)];
 }
 
-// Faixas oficiais do Protector, conforme Manual de Política Financeira: 0-399/400-599/600-799/800-1000
+// Faixas oficiais do Protector — agora lidas de POLITICA_CACHE (editável em Parâmetros de Crédito).
+// Fallback hardcoded só entra em ação se a política ainda não carregou ou está vazia (rede lenta, etc).
 function classeBaseProtector(pontos) {
+  const faixas = (POLITICA_CACHE || []).filter(f => f.fonte === 'PROTECTOR' && f.pontos_min !== null && f.pontos_max !== null);
+  const match = faixas.find(f => pontos >= f.pontos_min && pontos <= f.pontos_max);
+  if (match) return match.classe_label;
   if (pontos >= 800) return 'A';
   if (pontos >= 600) return 'B';
   if (pontos >= 400) return 'C';
   return 'D';
 }
 
-// Faixas oficiais do Serasa Score (fonte: serasa.com.br): 0-300 Muito Baixo/Alto risco,
-// 301-500 Baixo/Regular, 501-700 Bom/Médio risco, 701-1000 Excelente/Baixo risco.
-// Mapeadas para A-E apenas para manter consistência visual com o resto do sistema.
+// Faixas do Serasa Score — mesma lógica: lê de POLITICA_CACHE, com fallback hardcoded.
 function classeBaseSerasa(pontos) {
+  const faixas = (POLITICA_CACHE || []).filter(f => f.fonte === 'SERASA' && f.pontos_min !== null && f.pontos_max !== null);
+  const match = faixas.find(f => pontos >= f.pontos_min && pontos <= f.pontos_max);
+  if (match) return match.classe_label;
   if (pontos >= 701) return 'A';
   if (pontos >= 501) return 'B';
   if (pontos >= 301) return 'C';
   return 'D';
+}
+
+// Escala oficial do Protector confirmada no relatório real (indicador visual F‹E‹D‹C‹B‹A): 6 níveis, F = pior.
+// Motor interno (Rei-Fix) tem 5 classes (A-E). F é mapeado para E — mesmo nível de severidade ("à vista").
+function mapeiaClasseLetraBureau(letra) {
+  const mapa = { A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'E' };
+  return mapa[letra] || null;
 }
 
 function calcularClasseEDetalhes(d) {
@@ -1012,12 +1076,24 @@ function calcularClasseEDetalhes(d) {
   const fonteLabel = d.fonte === 'SERASA' ? 'Serasa' : 'Protector';
 
   if (d.pontosExternos === null || d.pontosExternos === undefined) {
+    // Decisão confirmada pelo usuário: se o bureau já manda a classe em letra (A-F), essa letra
+    // é a PALAVRA FINAL — não passa por rebaixamento adicional (protesto, inadimplência, etc.),
+    // porque o próprio bureau já considerou essas restrições no cálculo da letra dele.
+    if (d.classeExterna) {
+      const classeFinal = mapeiaClasseLetraBureau(d.classeExterna) || 'E';
+      detalhes.push({
+        fator: `Classe ${fonteLabel} informada diretamente no relatório: ${d.classeExterna}`,
+        impacto: `Classe ${classeFinal} — decisão final do bureau, sem rebaixamento adicional`
+      });
+      return { classe: classeFinal, pontosExternos: null, detalhes };
+    }
     detalhes.push({ fator: `Score ${fonteLabel} não identificado no relatório — classificação conservadora aplicada`, impacto: 'Classe E' });
     return { classe: 'E', pontosExternos: null, detalhes };
   }
 
   let classe = d.fonte === 'SERASA' ? classeBaseSerasa(d.pontosExternos) : classeBaseProtector(d.pontosExternos);
-  detalhes.push({ fator: `Score ${fonteLabel}: ${d.pontosExternos} pontos (faixa oficial)`, impacto: `Classe base ${classe}` });
+  const origemScore = d.scoreCorrigidoManualmente ? 'informado manualmente pelo analista' : 'faixa oficial extraída do relatório';
+  detalhes.push({ fator: `Score ${fonteLabel}: ${d.pontosExternos} pontos (${origemScore})`, impacto: `Classe base ${classe}` });
 
   if (d.statusDocumento && !/ATIV/i.test(d.statusDocumento)) {
     detalhes.push({ fator: `Situação cadastral: ${d.statusDocumento} (não ativa)`, impacto: 'Classe E — bloqueio' });
@@ -1046,7 +1122,12 @@ function calcularClasseEDetalhes(d) {
   return { classe, pontosExternos: d.pontosExternos, detalhes };
 }
 
-function calcularPrazo(classe) {
+function calcularPrazo(classe, fonte) {
+  const faixas = POLITICA_CACHE || [];
+  const match = faixas.find(f => f.classe_label === classe && f.fonte === fonte)
+    || faixas.find(f => f.classe_label === classe && f.fonte === 'AMBOS')
+    || faixas.find(f => f.classe_label === classe);
+  if (match) return { texto: match.prazo_label, dias: match.prazo_dias };
   const mapa = {
     A: { texto: '30 dias', dias: 30 }, B: { texto: '21-28 dias', dias: 25 },
     C: { texto: '14-21 dias', dias: 18 }, D: { texto: '7 dias', dias: 7 }, E: { texto: 'À vista', dias: 0 }
@@ -1087,9 +1168,12 @@ function gerarParecer(d, pontosExternos, classe, prazo) {
     pontosAtencao.push(`Probabilidade de inadimplência em nível de atenção (${d.probInadimplencia.toFixed(2)}%).`);
   if (d.fonte === 'MANUAL')
     pontosAtencao.push('Análise baseada em cadastro manual, sem consulta a bureau de crédito — confiabilidade reduzida.');
+  if (d.correcoesManuaisAplicadas && d.correcoesManuaisAplicadas.length > 0)
+    pontosAtencao.push(`Dados corrigidos manualmente pelo analista (sobrescreveram o que foi extraído do texto): ${d.correcoesManuaisAplicadas.join('; ')}.`);
 
-  if (d.protestosQtd > 0) riscos.push(`Restrição de protesto identificada.`);
+  if (d.protestosQtd > 0) riscos.push(`${d.protestosQtd} protesto(s) identificado(s)${d.protestosVal ? `, totalizando R$ ${d.protestosVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}.`);
   if (d.inadimplenciasQtd > 0) riscos.push(`${d.inadimplenciasQtd} registro(s) de inadimplência${d.inadimplenciasVal ? `, totalizando R$ ${d.inadimplenciasVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}.`);
+  if (d.acoesQtd > 0) riscos.push(`${d.acoesQtd} ação(ões) judicial(is) identificada(s)${d.acoesVal ? `, totalizando R$ ${d.acoesVal.toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}.`);
   if (d.chequesSemFundo > 0) riscos.push(`Restrição de cheque identificada.`);
   if (d.probInadimplencia >= 20) riscos.push(`Probabilidade de inadimplência crítica (${d.probInadimplencia.toFixed(2)}%).`);
 
@@ -1109,7 +1193,7 @@ function gerarParecer(d, pontosExternos, classe, prazo) {
 // ============================================================
 // FUNÇÃO PRINCIPAL — detecta formato e roteia para o parser correto
 // ============================================================
-function analisarRelatorio(texto) {
+function analisarRelatorio(texto, overrides) {
   const formato = detectarFormato(texto);
   let d;
 
@@ -1123,8 +1207,27 @@ function analisarRelatorio(texto) {
     throw new Error('Não foi possível identificar Nome/Razão Social ou Documento (CPF/CNPJ) no texto colado.');
   }
 
+  // Correções manuais: o analista pode sobrescrever qualquer campo extraído do texto (documento,
+  // score, protestos, etc). Útil quando o relatório vem num formato que o motor ainda não reconhece —
+  // em vez de esperar eu caçar a regex certa, o analista corrige na hora.
+  d.correcoesManuaisAplicadas = [];
+  if (overrides && typeof overrides === 'object') {
+    for (const campo of CAMPOS_CORRECAO_MANUAL) {
+      const valorBruto = overrides[campo.key];
+      if (valorBruto === undefined || valorBruto === null || valorBruto === '') continue;
+      let valorFinal;
+      if (campo.tipo === 'inteiro') valorFinal = parseInt(String(valorBruto).replace(/\D/g, '')) || 0;
+      else if (campo.tipo === 'decimal' || campo.tipo === 'moeda') valorFinal = parseFloat(String(valorBruto).replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+      else if (campo.tipo === 'letra') valorFinal = String(valorBruto).trim().toUpperCase().charAt(0);
+      else valorFinal = String(valorBruto).trim();
+      d[campo.key] = valorFinal;
+      if (campo.key === 'pontosExternos') d.scoreCorrigidoManualmente = true;
+      d.correcoesManuaisAplicadas.push(`${campo.label} = ${valorFinal}`);
+    }
+  }
+
   const { classe, pontosExternos, detalhes } = calcularClasseEDetalhes(d);
-  const prazo = calcularPrazo(classe);
+  const prazo = calcularPrazo(classe, d.fonte);
   const confianca = calcularConfianca(d);
   const parecer = gerarParecer(d, pontosExternos, classe, prazo);
 
@@ -1156,8 +1259,9 @@ function navigate(page) {
   const loaders = {
     dashboard: loadDashboard, analises: loadAnalises, clientes: loadClientes,
     excecoes: loadExcecoes, negativacoes: loadNegativacoes, carteira: loadCarteira,
-    auditoria: loadAuditoria, referencias: loadReferencias, retencoes: loadRetencoes,
-    decisoes: loadDecisoes, evolucao: loadEvolucaoFull, consultas: loadConsultasEAlertas
+    auditoria: loadAuditoria, referencias: loadReferencias,
+    decisoes: loadDecisoes, evolucao: loadEvolucaoFull, consultas: loadConsultasEAlertas,
+    parametros: loadParametros, relatorios: loadRelatorios
   };
   if (loaders[page]) loaders[page]();
 }
@@ -1213,7 +1317,7 @@ function limiteSugerido(a) {
 }
 
 // ==================== DASHBOARD ====================
-let riskDonutChart = null, evolScoreChartInst = null, consultas90ChartInst = null;
+let riskDonutChart = null;
 
 async function loadDashboard() {
   document.getElementById('dashDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -1228,9 +1332,11 @@ async function loadDashboard() {
     document.getElementById('dashMaiorRisco').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3)">Sem dados</td></tr>';
     document.getElementById('dashAlertas').innerHTML = '<div class="alert alert-info">Nenhum alerta. Comece adicionando análises.</div>';
     document.getElementById('dashAtividades').innerHTML = '<div class="text-muted" style="padding:16px;text-align:center">Sem atividades</div>';
-    document.getElementById('consultas90Total').textContent = '0';
     ['rc-valor','rc-limite','rc-limite-medio','rc-maior'].forEach(id => document.getElementById(id).textContent = 'R$ 0,00');
+    document.getElementById('rc-maior-nome').textContent = '—';
     renderRiskDist([]);
+    renderAnalisesMes([]);
+    renderConcentracaoRisco([]);
     return;
   }
 
@@ -1243,11 +1349,11 @@ async function loadDashboard() {
 
   document.getElementById('kpi-total').textContent = total;
   document.getElementById('kpi-aprovados').textContent = aprovados;
-  document.getElementById('kpi-aprovados-sub').textContent = total ? Math.round(aprovados/total*100) + '% do total' : '';
+  document.getElementById('kpi-aprovados-sub').textContent = total ? 'Taxa de Aprovação: ' + Math.round(aprovados/total*100) + '%' : '';
   document.getElementById('kpi-restricoes').textContent = restricoes;
   document.getElementById('kpi-restricoes-sub').textContent = total ? Math.round(restricoes/total*100) + '% do total' : '';
   document.getElementById('kpi-nao').textContent = nao;
-  document.getElementById('kpi-nao-sub').textContent = total ? Math.round(nao/total*100) + '% do total' : '';
+  document.getElementById('kpi-nao-sub').textContent = total ? 'Taxa de Reprovação: ' + Math.round(nao/total*100) + '%' : '';
   document.getElementById('kpi-excecoes').textContent = excecoes ? excecoes.length : 0;
   document.getElementById('kpi-prazo').textContent = prazoMed ?? '—';
 
@@ -1271,28 +1377,96 @@ async function loadDashboard() {
     </tr>
   `).join('') : '<tr><td colspan="3" style="text-align:center;padding:24px;color:var(--text3)">Nenhum cliente de alto risco</td></tr>';
 
-  // Resumo da carteira
-  const valorTotal = analises.reduce((s,a) => s + (a.clientes?.capital_social || 0), 0);
-  const limites = analises.map(a => limiteSugerido({ classe_interna: a.classe_interna, capital_social: a.clientes?.capital_social || 0 }));
-  const limiteTotal = limites.reduce((s,l) => s+l, 0);
-  const limiteMedio = limites.length ? limiteTotal / limites.length : 0;
-  const maiorLimite = limites.length ? Math.max(...limites) : 0;
+  // Resumo da carteira — deduplicado por cliente (pega só a análise MAIS RECENTE de cada um).
+  // Sem isso, um cliente analisado 3 vezes entrava 3x na soma, inflando o valor total da carteira.
+  const porClienteCarteira = {};
+  analises.forEach(a => {
+    const id = a.cliente_id || a.cnpj;
+    if (!porClienteCarteira[id] || new Date(a.created_at) > new Date(porClienteCarteira[id].created_at)) porClienteCarteira[id] = a;
+  });
+  const carteiraAtual = Object.values(porClienteCarteira);
+  const valorTotal = carteiraAtual.reduce((s,a) => s + (a.clientes?.capital_social || 0), 0);
+  const limitesCarteira = carteiraAtual.map(a => ({
+    nome: a.clientes?.razao_social || a.cnpj, cnpj: a.cnpj,
+    limite: limiteSugerido({ classe_interna: a.classe_interna, capital_social: a.clientes?.capital_social || 0 })
+  }));
+  const limiteTotal = limitesCarteira.reduce((s,l) => s + l.limite, 0);
+  const limiteMedio = limitesCarteira.length ? limiteTotal / limitesCarteira.length : 0;
+  const maior = limitesCarteira.length ? limitesCarteira.reduce((m,l) => l.limite > m.limite ? l : m, limitesCarteira[0]) : { nome: '—', cnpj: null, limite: 0 };
   document.getElementById('rc-valor').textContent = fmtBRL(valorTotal);
   document.getElementById('rc-limite').textContent = fmtBRL(limiteTotal);
   document.getElementById('rc-limite-medio').textContent = fmtBRL(limiteMedio);
-  document.getElementById('rc-maior').textContent = fmtBRL(maiorLimite);
-
-  // Consultas 90 dias (soma das análises com data nos últimos 90 dias)
-  const noventaDias = new Date(); noventaDias.setDate(noventaDias.getDate() - 90);
-  const recentes90 = analises.filter(a => new Date(a.created_at) >= noventaDias);
-  const totalConsultas90 = recentes90.reduce((s,a) => s + (a.consultas_realizadas || 0), 0);
-  document.getElementById('consultas90Total').textContent = totalConsultas90;
+  document.getElementById('rc-maior').textContent = fmtBRL(maior.limite);
+  document.getElementById('rc-maior-nome').textContent = maior.nome;
+  document.getElementById('rc-maior-box').onclick = maior.cnpj ? () => verCliente(maior.cnpj) : null;
 
   renderRiskDist(analises);
   renderAlertas(analises);
   renderAtividades(analises);
-  renderEvolScoreChart(analises);
-  renderConsultas90Chart(analises);
+  renderAnalisesMes(analises);
+  renderConcentracaoRisco(analises);
+}
+
+let analisesMesChartInst = null;
+function renderAnalisesMes(analises) {
+  const porMes = {};
+  analises.forEach(a => {
+    const d = new Date(a.created_at);
+    const key = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
+    porMes[key] = (porMes[key] || 0) + 1;
+  });
+  // Garante últimos 6 meses mesmo sem dados
+  const meses = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setMonth(d.getMonth() - i);
+    meses.push(d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
+  }
+  const valores = meses.map(m => porMes[m] || 0);
+
+  if (analisesMesChartInst) analisesMesChartInst.destroy();
+  const ctx = document.getElementById('analisesMesChart').getContext('2d');
+  analisesMesChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: { labels: meses, datasets: [{ data: valores, backgroundColor: '#4d8ef5', borderRadius: 4 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+      scales: { x: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { display: false } },
+                y: { ticks: { color: '#8d97ab', font:{size:10}, stepSize: 1 }, grid: { color: '#1a2030' }, beginAtZero: true } } }
+  });
+}
+
+function renderConcentracaoRisco(analises) {
+  const el = document.getElementById('concentracaoRisco');
+  if (!analises.length) { el.innerHTML = '<div class="text-muted" style="text-align:center;padding:24px">Sem dados</div>'; return; }
+
+  // Agrupa por cliente_id, pega o limite mais recente de cada um
+  const porCliente = {};
+  analises.forEach(a => {
+    const id = a.cliente_id || a.cnpj;
+    if (!porCliente[id]) porCliente[id] = { nome: a.clientes?.razao_social || a.cnpj, limite: 0 };
+    const l = limiteSugerido({ classe_interna: a.classe_interna, capital_social: a.clientes?.capital_social || 0 });
+    if (l > porCliente[id].limite) porCliente[id].limite = l;
+  });
+
+  const todos = Object.values(porCliente).sort((a, b) => b.limite - a.limite);
+  const limiteTotal = todos.reduce((s, c) => s + c.limite, 0) || 1;
+  const top5 = todos.slice(0, 5);
+  const pctTop5 = Math.round(top5.reduce((s, c) => s + c.limite, 0) / limiteTotal * 100);
+  const alertaConc = pctTop5 > 40;
+
+  el.innerHTML = top5.map(c => {
+    const pct = Math.round(c.limite / limiteTotal * 100);
+    return `<div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%">${c.nome}</span>
+        <span style="font-weight:700;color:${pct > 15 ? 'var(--amber)' : 'var(--text)'}">${pct}%</span>
+      </div>
+      <div style="height:5px;background:var(--bg3);border-radius:3px">
+        <div style="height:5px;width:${pct}%;background:${pct > 15 ? 'var(--amber)' : 'var(--blue)'};border-radius:3px"></div>
+      </div>
+    </div>`;
+  }).join('') + `<div style="margin-top:8px;font-size:11px;font-weight:700;color:${alertaConc ? 'var(--amber)' : 'var(--green)'}">
+    Top 5 = ${pctTop5}% do limite total ${alertaConc ? '⚠️ concentração alta' : '✅ dentro do limite'}
+  </div>`;
 }
 
 function renderRiskDist(analises) {
@@ -1351,48 +1525,6 @@ function renderAtividades(analises) {
   `).join('') : '<div class="text-muted" style="padding:16px;text-align:center">Sem atividades recentes</div>';
 }
 
-function renderEvolScoreChart(analises) {
-  const porMes = {};
-  analises.forEach(a => {
-    if (!a.score_protector) return;
-    const d = new Date(a.created_at);
-    const key = d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' });
-    if (!porMes[key]) porMes[key] = [];
-    porMes[key].push(a.score_protector);
-  });
-  const labels = Object.keys(porMes).slice(-6);
-  const valores = labels.map(k => Math.round(porMes[k].reduce((a,b)=>a+b,0)/porMes[k].length));
-
-  if (evolScoreChartInst) evolScoreChartInst.destroy();
-  const ctx = document.getElementById('evolScoreChart').getContext('2d');
-  evolScoreChartInst = new Chart(ctx, {
-    type: 'line',
-    data: { labels: labels.length ? labels : ['—'], datasets: [{ data: valores.length ? valores : [0], borderColor: '#4d8ef5', backgroundColor: 'rgba(77,142,245,.1)', fill: true, tension: .35, pointRadius: 3 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-      scales: { x: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { display: false } }, y: { min:0, max:1000, ticks: { color: '#8d97ab', font:{size:10} }, grid: { color: '#1a2030' } } } }
-  });
-}
-
-function renderConsultas90Chart(analises) {
-  const porMes = {};
-  analises.forEach(a => {
-    const d = new Date(a.created_at);
-    const key = d.toLocaleDateString('pt-BR', { month: 'short' });
-    porMes[key] = (porMes[key] || 0) + (a.consultas_realizadas || 0);
-  });
-  const labels = Object.keys(porMes).slice(-3);
-  const valores = labels.map(k => porMes[k]);
-
-  if (consultas90ChartInst) consultas90ChartInst.destroy();
-  const ctx = document.getElementById('consultas90Chart').getContext('2d');
-  consultas90ChartInst = new Chart(ctx, {
-    type: 'bar',
-    data: { labels: labels.length ? labels : ['—'], datasets: [{ data: valores.length ? valores : [0], backgroundColor: '#9b7cf0', borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-      scales: { x: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { display: false } }, y: { ticks: { color: '#8d97ab', font:{size:10} }, grid: { color: '#1a2030' } } } }
-  });
-}
-
 // ==================== NOVA ANÁLISE (MOTOR DE REGRAS — SEM IA) ====================
 const EXEMPLO = `ANALÍTICA - PJ
 
@@ -1440,9 +1572,82 @@ function preencherExemplo() {
   toast('Exemplo carregado. Clique em Analisar Relatório.', 'info');
 }
 
+// Campos que o analista pode corrigir manualmente na tela de Nova Análise (Bureau).
+// 'key' é o nome interno usado no objeto de dados extraído (d.*); 'tipo' define a conversão de valor.
+const CAMPOS_CORRECAO_MANUAL = [
+  { key: 'documento', label: 'CNPJ/CPF (Documento)', tipo: 'texto', placeholder: 'Ex: 12.345.678/0001-99' },
+  { key: 'nome', label: 'Razão Social / Nome', tipo: 'texto', placeholder: 'Ex: EMPRESA EXEMPLO LTDA' },
+  { key: 'pontosExternos', label: 'Score numérico (Pontos)', tipo: 'inteiro', placeholder: 'Ex: 650' },
+  { key: 'classeExterna', label: 'Classe informada pelo bureau (A-F)', tipo: 'letra', placeholder: 'Ex: B' },
+  { key: 'statusDocumento', label: 'Situação Cadastral', tipo: 'texto', placeholder: 'Ex: ATIVO' },
+  { key: 'capitalSocial', label: 'Capital Social (R$)', tipo: 'moeda', placeholder: 'Ex: 50000,00' },
+  { key: 'probInadimplencia', label: 'Probabilidade de Inadimplência (%)', tipo: 'decimal', placeholder: 'Ex: 8,5' },
+  { key: 'protestosQtd', label: 'Protestos — Quantidade', tipo: 'inteiro', placeholder: 'Ex: 2' },
+  { key: 'protestosVal', label: 'Protestos — Valor (R$)', tipo: 'moeda', placeholder: 'Ex: 15000,00' },
+  { key: 'inadimplenciasQtd', label: 'Inadimplências — Quantidade', tipo: 'inteiro', placeholder: 'Ex: 1' },
+  { key: 'inadimplenciasVal', label: 'Inadimplências — Valor (R$)', tipo: 'moeda', placeholder: 'Ex: 8000,00' },
+  { key: 'acoesQtd', label: 'Ações Judiciais — Quantidade', tipo: 'inteiro', placeholder: 'Ex: 1' },
+  { key: 'acoesVal', label: 'Ações Judiciais — Valor (R$)', tipo: 'moeda', placeholder: 'Ex: 12000,00' },
+  { key: 'chequesSemFundo', label: 'Cheques sem Fundo — Quantidade', tipo: 'inteiro', placeholder: 'Ex: 0' },
+  { key: 'consultasRealizadas', label: 'Consultas Realizadas — Quantidade', tipo: 'inteiro', placeholder: 'Ex: 5' },
+];
+
+let correcaoManualContador = 0;
+const correcaoManualLinhas = [];
+
+function adicionarLinhaCorrecaoManual() {
+  const id = `cm_${correcaoManualContador++}`;
+  correcaoManualLinhas.push(id);
+  renderCorrecoesManuais();
+}
+
+function removerLinhaCorrecaoManual(id) {
+  const idx = correcaoManualLinhas.indexOf(id);
+  if (idx > -1) correcaoManualLinhas.splice(idx, 1);
+  renderCorrecoesManuais();
+}
+
+function renderCorrecoesManuais() {
+  const container = document.getElementById('correcoesManuaisList');
+  if (!container) return;
+  container.innerHTML = correcaoManualLinhas.map(id => `
+    <div style="display:flex;gap:8px;margin-bottom:8px" id="row_${id}">
+      <select id="${id}_campo" style="flex:1.3" onchange="atualizarPlaceholderCorrecao('${id}')">
+        <option value="">Selecione o campo...</option>
+        ${CAMPOS_CORRECAO_MANUAL.map(c => `<option value="${c.key}">${c.label}</option>`).join('')}
+      </select>
+      <input type="text" id="${id}_valor" placeholder="Valor" style="flex:1">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="removerLinhaCorrecaoManual('${id}')">🗑</button>
+    </div>
+  `).join('');
+}
+
+function atualizarPlaceholderCorrecao(id) {
+  const campoKey = document.getElementById(`${id}_campo`).value;
+  const campo = CAMPOS_CORRECAO_MANUAL.find(c => c.key === campoKey);
+  document.getElementById(`${id}_valor`).placeholder = campo ? campo.placeholder : 'Valor';
+}
+
+function coletarCorrecoesManuais() {
+  const overrides = {};
+  for (const id of correcaoManualLinhas) {
+    const campoEl = document.getElementById(`${id}_campo`);
+    const valorEl = document.getElementById(`${id}_valor`);
+    if (!campoEl || !valorEl) continue;
+    if (campoEl.value && valorEl.value.trim() !== '') overrides[campoEl.value] = valorEl.value.trim();
+  }
+  return overrides;
+}
+
+function limparCorrecoesManuais() {
+  correcaoManualLinhas.length = 0;
+  renderCorrecoesManuais();
+}
+
 async function runAnalise() {
   const texto = document.getElementById('relatorioTexto').value.trim();
   const responsavel = document.getElementById('analiseResponsavel').value || 'Analista';
+  const overrides = coletarCorrecoesManuais();
 
   if (!texto || texto.length < 50) {
     toast('Cole o texto do relatório antes de analisar.', 'error');
@@ -1452,9 +1657,10 @@ async function runAnalise() {
   document.getElementById('analiseResult').innerHTML = '<div style="text-align:center;padding:48px"><div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 16px"></div><div class="text-muted">Processando relatório...</div></div>';
 
   try {
-    const parsed = analisarRelatorio(texto);
+    const parsed = analisarRelatorio(texto, overrides);
     await salvarAnalise(parsed, texto, responsavel);
     renderResultado(parsed);
+    limparCorrecoesManuais();
     toast('Análise concluída e salva com sucesso!', 'success');
   } catch(e) {
     console.error(e);
@@ -1678,7 +1884,7 @@ async function runAnaliseManual() {
   };
 
   const { classe, pontos, detalhes } = calcularClasseManual(m);
-  const prazo = calcularPrazo(classe);
+  const prazo = calcularPrazo(classe, 'MANUAL');
 
   const pontosPositivos = [], pontosAtencao = [], riscos = [];
   if (m.clienteAtual && m.qtdAtrasos === 0) pontosPositivos.push('Cliente atual sem histórico de atrasos.');
@@ -1760,7 +1966,7 @@ function renderResultadoManual(d, pontosInternos) {
 async function loadAnalises() {
   const { data } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false });
   if (!data || data.length === 0) {
-    document.getElementById('analisesList').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma análise ainda. <a href="#" onclick="navigate(\'nova-analise\')">Criar primeira →</a></td></tr>';
+    document.getElementById('analisesList').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma análise ainda. <a href="#" onclick="navigate(\'nova-analise\')">Criar primeira →</a></td></tr>';
     return;
   }
   document.getElementById('analisesList').innerHTML = data.map(a => `
@@ -1771,20 +1977,24 @@ async function loadAnalises() {
       <td style="color:${(a.probabilidade_inadimplencia||0) > 15 ? 'var(--red)' : 'var(--text)'}">${a.probabilidade_inadimplencia ?? '—'}%</td>
       <td>${recBadge(a.prazo_sugerido)}</td>
       <td>${confGauge(a.confianca)}</td>
+      <td class="text-muted">${a.usuario_responsavel || '—'}</td>
       <td class="text-muted nowrap">${fmtDate(a.created_at)}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button></td>
+      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button> <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirAnalise('${a.id}')">🗑</button></td>
     </tr>
   `).join('');
 }
 
+async function excluirAnalise(id) {
+  if (!confirm('Excluir esta análise? Essa ação não pode ser desfeita.')) return;
+  const { error } = await db.from('analises').delete().eq('id', id);
+  if (error) { toast('Erro ao excluir: ' + error.message, 'error'); return; }
+  toast('Análise excluída.', 'success');
+  navigate('analises');
+}
+
 // ==================== CLIENTES ====================
-async function loadClientes() {
-  const { data } = await db.from('clientes').select('*').order('created_at', { ascending: false });
-  if (!data || data.length === 0) {
-    document.getElementById('clientesList').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Nenhum cliente cadastrado. Faça a primeira análise.</td></tr>';
-    return;
-  }
-  document.getElementById('clientesList').innerHTML = data.map(c => `
+function clienteRowHTML(c) {
+  return `
     <tr>
       <td><strong>${c.razao_social}</strong></td>
       <td class="text-muted">${c.cnpj}</td>
@@ -1792,9 +2002,52 @@ async function loadClientes() {
       <td class="text-muted">${c.cnae || '—'}</td>
       <td><span class="badge ${c.status_receita === 'ATIVO' ? 'badge-a' : 'badge-e'}">${c.status_receita || 'ATIVO'}</span></td>
       <td class="text-muted">${fmtDate(c.created_at)}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick="verCliente('${c.cnpj}')">📊 Análises</button></td>
-    </tr>
-  `).join('');
+      <td><button class="btn btn-secondary btn-sm" onclick="verCliente('${c.cnpj}')">📊 Análises</button> <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirCliente('${c.id}', '${(c.razao_social||'').replace(/'/g,"\\'")}')">🗑</button></td>
+    </tr>`;
+}
+
+async function loadClientes() {
+  const { data } = await db.from('clientes').select('*').order('created_at', { ascending: false });
+  if (!data || data.length === 0) {
+    document.getElementById('clientesList').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Nenhum cliente cadastrado. Faça a primeira análise.</td></tr>';
+    return;
+  }
+  document.getElementById('clientesList').innerHTML = data.map(clienteRowHTML).join('');
+}
+
+// Busca global (cabeçalho) — funcional: por CNPJ (8+ dígitos) ou nome parcial. Enter pra buscar.
+async function buscarClienteGlobal(termo) {
+  termo = termo.trim();
+  if (!termo) return;
+  const termoLimpo = termo.replace(/\D/g, '');
+  let query = db.from('clientes').select('*');
+  query = termoLimpo.length >= 8 ? query.ilike('cnpj', `%${termoLimpo}%`) : query.ilike('razao_social', `%${termo}%`);
+  const { data, error } = await query.limit(20);
+  if (error) { toast('Erro na busca: ' + error.message, 'error'); return; }
+  if (!data || data.length === 0) { toast(`Nenhum cliente encontrado para "${termo}".`, 'info'); return; }
+  if (data.length === 1) {
+    verCliente(data[0].cnpj);
+  } else {
+    navigate('clientes');
+    document.getElementById('clientesList').innerHTML = data.map(clienteRowHTML).join('');
+    toast(`${data.length} clientes encontrados para "${termo}".`, 'info');
+  }
+  document.getElementById('globalSearch').value = '';
+}
+
+// ATENÇÃO: excluir um cliente apaga em cascata (definido no schema do Supabase, ON DELETE CASCADE)
+// todas as análises, referências comerciais, negativações e cadastros manuais ligados a ele.
+// Por isso o aviso conta quantas análises serão perdidas antes de confirmar.
+async function excluirCliente(id, nome) {
+  const { count } = await db.from('analises').select('id', { count: 'exact', head: true }).eq('cliente_id', id);
+  const aviso = (count && count > 0)
+    ? `Excluir "${nome}" vai apagar também ${count} análise(s) ligada(s) a ele, além de referências comerciais e negativações associadas a esse cliente. Essa ação não pode ser desfeita. Confirmar?`
+    : `Excluir "${nome}"? Essa ação não pode ser desfeita.`;
+  if (!confirm(aviso)) return;
+  const { error } = await db.from('clientes').delete().eq('id', id);
+  if (error) { toast('Erro ao excluir: ' + error.message, 'error'); return; }
+  toast('Cliente excluído.', 'success');
+  loadClientes();
 }
 
 async function verCliente(cnpj) {
@@ -1809,8 +2062,9 @@ async function verCliente(cnpj) {
       <td>${a.probabilidade_inadimplencia ?? '—'}%</td>
       <td>${recBadge(a.prazo_sugerido)}</td>
       <td>${confGauge(a.confianca)}</td>
+      <td class="text-muted">${a.usuario_responsavel || '—'}</td>
       <td class="text-muted">${fmtDate(a.created_at)}</td>
-      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button></td>
+      <td><button class="btn btn-secondary btn-sm" onclick='openAnaliseModal(${JSON.stringify(a).replace(/'/g,"&#39;")})'>👁 Ver</button> <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirAnalise('${a.id}')">🗑</button></td>
     </tr>
   `).join('');
 }
@@ -1887,6 +2141,26 @@ async function saveExcecao() {
   closeModal('modalExcecao'); loadExcecoes();
 }
 
+function openNegativacaoModal() { document.getElementById('modalNegativacao').classList.add('open'); }
+
+async function saveNegativacao() {
+  const cnpj = document.getElementById('negCnpj').value.replace(/\D/g,'');
+  const valorTexto = document.getElementById('negValor').value;
+  const status = document.getElementById('negStatus').value;
+  const data = document.getElementById('negData').value;
+  const obs = document.getElementById('negObs').value;
+  if (!cnpj || !valorTexto) { toast('Preencha CNPJ e valor.', 'error'); return; }
+  const valor = parseFloat(valorTexto.replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'')) || 0;
+  const { data: cli } = await db.from('clientes').select('id').eq('cnpj', cnpj).single();
+  if (!cli) { toast('Cliente não encontrado. Faça uma análise primeiro.', 'error'); return; }
+  const { error } = await db.from('negativacoes').insert({ cliente_id: cli.id, valor, status, data_ocorrencia: data || null, observacao: obs });
+  if (error) { toast('Erro ao salvar: ' + error.message, 'error'); return; }
+  toast('Negativação cadastrada com sucesso!', 'success');
+  closeModal('modalNegativacao');
+  document.getElementById('negCnpj').value = ''; document.getElementById('negValor').value = ''; document.getElementById('negObs').value = '';
+  loadNegativacoes();
+}
+
 async function loadExcecoes() {
   const { data } = await db.from('excecoes_comerciais').select('*, clientes(razao_social, cnpj)').order('created_at', { ascending: false });
   if (!data || data.length === 0) {
@@ -1932,7 +2206,7 @@ async function saveReferencia() {
 async function loadReferencias() {
   const { data, error } = await db.from('referencias_comerciais').select('*, clientes(razao_social, cnpj)').order('created_at', { ascending: false });
   if (error || !data || data.length === 0) {
-    document.getElementById('referenciasList').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr>';
+    document.getElementById('referenciasList').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma referência comercial registrada</td></tr>';
     return;
   }
   const classMap = { Bom: 'badge-a', Médio: 'badge-c', Ruim: 'badge-e' };
@@ -1944,33 +2218,165 @@ async function loadReferencias() {
       <td class="text-muted">${r.pontualidade || '—'}</td>
       <td><span class="badge ${classMap[r.classificacao]||'badge-c'}">${r.classificacao}</span></td>
       <td class="text-muted">${fmtDate(r.created_at)}</td>
+      <td><button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirReferencia('${r.id}')">🗑</button></td>
     </tr>
   `).join('');
 }
 
+async function excluirReferencia(id) {
+  if (!confirm('Excluir esta referência comercial? Essa ação não pode ser desfeita.')) return;
+  const { error } = await db.from('referencias_comerciais').delete().eq('id', id);
+  if (error) { toast('Erro ao excluir: ' + error.message, 'error'); return; }
+  toast('Referência excluída.', 'success');
+  loadReferencias();
+}
+
 // ==================== RETENÇÕES ====================
-async function loadRetencoes() {
-  const { data, error } = await db.from('retencoes').select('*, clientes(razao_social)').order('created_at', { ascending: false });
-  if (error || !data || data.length === 0) {
-    document.getElementById('retencoesList').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma retenção registrada</td></tr>';
+// ==================== RELATÓRIOS GERENCIAIS ====================
+async function loadRelatorios() {
+  // página é estática (só o botão de exportação) — nada pra pré-carregar
+}
+
+async function exportarAnalisesCSV() {
+  toast('Gerando arquivo...', 'info');
+  const { data, error } = await db.from('analises').select('*, clientes(razao_social, cnpj)').order('created_at', { ascending: false });
+  if (error) { toast('Erro ao buscar análises: ' + error.message, 'error'); return; }
+  if (!data || data.length === 0) { toast('Nenhuma análise para exportar.', 'error'); return; }
+
+  const colunas = [
+    ['Razão Social', a => a.clientes?.razao_social || ''],
+    ['CNPJ/CPF', a => a.cnpj || ''],
+    ['Fonte', a => a.fonte_dados || ''],
+    ['Score Protector', a => a.score_protector ?? ''],
+    ['Classe Bureau', a => a.classe_protector || ''],
+    ['Classe Rei-Fix', a => a.classe_interna || ''],
+    ['Prob. Inadimplência (%)', a => a.probabilidade_inadimplencia ?? ''],
+    ['Protestos', a => a.protestos ?? 0],
+    ['Ações Judiciais', a => a.acoes ?? 0],
+    ['Inadimplências', a => a.inadimplencias ?? 0],
+    ['Cheques Sem Fundo', a => a.cheques_sem_fundo ?? 0],
+    ['Prazo Sugerido', a => a.prazo_sugerido || ''],
+    ['Prazo (dias)', a => a.prazo_dias ?? ''],
+    ['Confiança', a => a.confianca || ''],
+    ['Responsável', a => a.usuario_responsavel || ''],
+    ['Data da Análise', a => fmtDate(a.data_analise || a.created_at)],
+  ];
+
+  const escapeCSV = (v) => {
+    const s = String(v ?? '');
+    return /[",;\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+
+  const header = colunas.map(c => c[0]).join(';');
+  const linhas = data.map(a => colunas.map(c => escapeCSV(c[1](a))).join(';'));
+  // ';' como separador e BOM no início — Excel em português-BR espera isso pra abrir acentuação certo
+  const csv = '\uFEFF' + [header, ...linhas].join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `analises_rei-fix_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  toast(`${data.length} análise(s) exportada(s) com sucesso!`, 'success');
+}
+
+// ==================== PARÂMETROS DE CRÉDITO (Política configurável) ====================
+let POLITICA_FONTE_ATUAL = 'PROTECTOR';
+
+async function loadParametros() {
+  await carregarPoliticaCredito();
+  renderParametrosFaixas();
+  renderParametrosClasseE();
+}
+
+function selecionarFontePolitica(fonte) {
+  POLITICA_FONTE_ATUAL = fonte;
+  document.getElementById('parFonteBtnPROTECTOR').className = fonte === 'PROTECTOR' ? 'btn btn-sm' : 'btn btn-secondary btn-sm';
+  document.getElementById('parFonteBtnSERASA').className = fonte === 'SERASA' ? 'btn btn-sm' : 'btn btn-secondary btn-sm';
+  renderParametrosFaixas();
+}
+
+function renderParametrosFaixas() {
+  const faixas = POLITICA_CACHE
+    .filter(f => f.fonte === POLITICA_FONTE_ATUAL && f.pontos_min !== null)
+    .sort((a, b) => (b.pontos_min ?? -1) - (a.pontos_min ?? -1));
+  document.getElementById('parametrosFaixasList').innerHTML = faixas.length ? faixas.map(f => `
+    <tr>
+      <td><input type="number" id="pf_min_${f.id}" value="${f.pontos_min}" style="width:80px"></td>
+      <td><input type="number" id="pf_max_${f.id}" value="${f.pontos_max}" style="width:80px"></td>
+      <td><select id="pf_classe_${f.id}">${['A','B','C','D','E'].map(c => `<option value="${c}" ${c===f.classe_label?'selected':''}>${c}</option>`).join('')}</select></td>
+      <td><input type="number" id="pf_dias_${f.id}" value="${f.prazo_dias}" style="width:70px"></td>
+      <td><input type="text" id="pf_label_${f.id}" value="${(f.prazo_label||'').replace(/"/g,'&quot;')}" style="width:130px"></td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="salvarFaixaPolitica('${f.id}')">💾</button>
+        <button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirFaixaPolitica('${f.id}')">🗑</button>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text3)">Nenhuma faixa cadastrada pra esta fonte ainda.</td></tr>';
+}
+
+function renderParametrosClasseE() {
+  const e = POLITICA_CACHE.find(f => f.classe_label === 'E');
+  if (!e) {
+    document.getElementById('parametrosClasseE').innerHTML = '<div class="text-muted">Não encontrada — rode a migração SQL da Política de Crédito.</div>';
     return;
   }
-  document.getElementById('retencoesList').innerHTML = data.map(r => `
-    <tr>
-      <td><strong>${r.clientes?.razao_social || '—'}</strong></td>
-      <td>${r.motivo || '—'}</td>
-      <td class="text-muted">${r.parametro || '—'}</td>
-      <td><span class="badge ${r.ativo ? 'badge-c' : 'badge-a'}">${r.ativo ? 'Em análise' : 'Resolvida'}</span></td>
-      <td class="text-muted">${fmtDate(r.created_at)}</td>
-    </tr>
-  `).join('');
+  document.getElementById('parametrosClasseE').innerHTML = `
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <label>Prazo (dias): <input type="number" id="pe_dias" value="${e.prazo_dias}" style="width:70px"></label>
+      <label>Prazo (texto exibido): <input type="text" id="pe_label" value="${(e.prazo_label||'').replace(/"/g,'&quot;')}" style="width:130px"></label>
+      <button class="btn btn-secondary btn-sm" onclick="salvarFaixaPolitica('${e.id}', true)">💾 Salvar</button>
+    </div>`;
+}
+
+async function salvarFaixaPolitica(id, isClasseE) {
+  const update = isClasseE
+    ? { prazo_dias: parseInt(document.getElementById('pe_dias').value) || 0, prazo_label: document.getElementById('pe_label').value }
+    : {
+        pontos_min: parseInt(document.getElementById(`pf_min_${id}`).value),
+        pontos_max: parseInt(document.getElementById(`pf_max_${id}`).value),
+        classe_label: document.getElementById(`pf_classe_${id}`).value,
+        prazo_dias: parseInt(document.getElementById(`pf_dias_${id}`).value) || 0,
+        prazo_label: document.getElementById(`pf_label_${id}`).value
+      };
+  const { error } = await db.from('politica_credito_faixas').update(update).eq('id', id);
+  if (error) { toast('Erro ao salvar: ' + error.message, 'error'); return; }
+  toast('Política atualizada — vale a partir da próxima análise.', 'success');
+  await carregarPoliticaCredito();
+  renderParametrosFaixas();
+  renderParametrosClasseE();
+}
+
+async function excluirFaixaPolitica(id) {
+  if (!confirm('Excluir esta faixa? Análises já feitas não mudam. Novas análises com pontuação nessa faixa vão cair em "D" por segurança até você cobrir essa faixa de novo.')) return;
+  const { error } = await db.from('politica_credito_faixas').delete().eq('id', id);
+  if (error) { toast('Erro ao excluir: ' + error.message, 'error'); return; }
+  toast('Faixa excluída.', 'success');
+  await carregarPoliticaCredito();
+  renderParametrosFaixas();
+}
+
+async function adicionarFaixaPolitica() {
+  const maxOrdem = POLITICA_CACHE.filter(f => f.fonte === POLITICA_FONTE_ATUAL).reduce((m, f) => Math.max(m, f.ordem || 0), 0);
+  const { error } = await db.from('politica_credito_faixas').insert({
+    fonte: POLITICA_FONTE_ATUAL, classe_label: 'C', pontos_min: 0, pontos_max: 0,
+    prazo_dias: 7, prazo_label: '7 dias', ordem: maxOrdem + 1
+  });
+  if (error) { toast('Erro ao criar faixa: ' + error.message, 'error'); return; }
+  toast('Faixa criada — edite os valores (pontos, classe e prazo) e clique em salvar.', 'success');
+  await carregarPoliticaCredito();
+  renderParametrosFaixas();
 }
 
 // ==================== NEGATIVAÇÕES ====================
 async function loadNegativacoes() {
   const { data } = await db.from('negativacoes').select('*, clientes(razao_social)').order('created_at', { ascending: false });
   if (!data || data.length === 0) {
-    document.getElementById('negativacoesList').innerHTML = '<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr>';
+    document.getElementById('negativacoesList').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma negativação registrada</td></tr>';
     return;
   }
   const statusColors = { 'Em atraso':'badge-d', 'Cobrança':'badge-c', 'Protestado':'badge-e', 'Negativado':'badge-e', 'Acordo':'badge-b', 'Regularizado':'badge-a' };
@@ -1981,8 +2387,17 @@ async function loadNegativacoes() {
       <td><span class="badge ${statusColors[n.status]||'badge-d'}">${n.status}</span></td>
       <td class="text-muted">${fmtDate(n.data_ocorrencia)}</td>
       <td class="text-muted">${n.observacao || '—'}</td>
+      <td><button class="btn btn-secondary btn-sm" style="color:var(--red)" onclick="excluirNegativacao('${n.id}')">🗑</button></td>
     </tr>
   `).join('');
+}
+
+async function excluirNegativacao(id) {
+  if (!confirm('Excluir este registro de negativação? Essa ação não pode ser desfeita.')) return;
+  const { error } = await db.from('negativacoes').delete().eq('id', id);
+  if (error) { toast('Erro ao excluir: ' + error.message, 'error'); return; }
+  toast('Registro excluído.', 'success');
+  loadNegativacoes();
 }
 
 // ==================== HISTÓRICO DE DECISÕES ====================
@@ -2104,7 +2519,8 @@ function closeModal(id) {
 }
 
 // ==================== INIT ====================
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  await carregarPoliticaCredito();
   loadDashboard();
 });
 </script>
