@@ -711,7 +711,10 @@ select option{background:var(--bg2)}
       <button class="close-btn" onclick="closeModal('modalAnalise')">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('modalAnalise')">Fechar</button></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalAnalise')">Fechar</button>
+      <button class="btn btn-primary" onclick="gerarTextoResumoAnalise(window.__modalAnaliseAtual)">📤 Gerar Texto p/ Compartilhar</button>
+    </div>
   </div>
 </div>
 
@@ -762,6 +765,23 @@ select option{background:var(--bg2)}
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modalNegativacao')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveNegativacao()">💾 Salvar Negativação</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TEXTO RESUMIDO PARA COMPARTILHAR -->
+<div class="modal-bg" id="modalResumoTexto">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">📤 Texto para Compartilhar</div>
+      <button class="close-btn" onclick="closeModal('modalResumoTexto')">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="resumoTextoArea" readonly style="min-height:280px;font-family:inherit;font-size:13px;line-height:1.6"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modalResumoTexto')">Fechar</button>
+      <button class="btn btn-primary" onclick="copiarResumoTexto()">📋 Copiar Texto</button>
     </div>
   </div>
 </div>
@@ -851,11 +871,37 @@ function getNumBR(texto, regex) {
 // ============================================================
 // PARSER: PROTECTOR PJ (formato original já validado)
 // ============================================================
+// Parser unificado da linha de dados da seção SCORE (Probabilidade/Classe/Período/Pontos/Tipo).
+// O Protector às vezes "engole" a coluna de Probabilidade quando ela vem vazia no copia-e-cola,
+// deslocando todo o resto uma posição à esquerda — por isso a heurística: se o primeiro token for
+// uma letra solta A-F, sabemos que é a Classe, não a Probabilidade, e ajustamos o resto a partir daí.
+// Também trata o caso em que "Pontos" vem como texto embutido ("score: 956") em vez de número puro.
+function parseLinhaScore(texto) {
+  const m = texto.match(/Probabilidade de Inadimpl[êe]ncia\(%\)\s*\t\s*Classe\s*\t\s*Per[íi]odo\(Meses\)\s*\t\s*Pontos\s*\t\s*Tipo\s*\n+([^\n]*)/i);
+  if (!m) return { probInadimplencia: 0, classeExterna: null, periodoMeses: null, pontosExternos: null, tipo: null };
+  const tokens = m[1].split('\t').map(t => t.trim());
+  let prob, classe, periodo, pontosRaw, tipo;
+  if (/^[A-F]$/.test(tokens[0])) {
+    [classe, periodo, pontosRaw, tipo] = tokens;
+    prob = null;
+  } else {
+    [prob, classe, periodo, pontosRaw, tipo] = tokens;
+  }
+  const probInadimplencia = prob ? (parseFloat(prob.replace('%', '').replace(',', '.')) || 0) : 0;
+  const periodoMeses = periodo ? (parseInt(periodo) || null) : null;
+  let pontosExternos = null;
+  if (pontosRaw) {
+    const numMatch = pontosRaw.match(/(\d{1,4})/);
+    if (numMatch && parseInt(numMatch[1]) > 0) pontosExternos = parseInt(numMatch[1]);
+  }
+  return { probInadimplencia, classeExterna: classe ? classe.toUpperCase() : null, periodoMeses, pontosExternos, tipo: tipo || null };
+}
+
 function parseProtectorPJ(texto) {
   const razaoSocial = getMatch(texto, /Razão Social:\s*(.+)/i);
   const documento = getMatch(texto, /Documento:\s*([\d]+)/i);
   const nomeFantasia = getMatch(texto, /Nome Fantasia:\s*(.+)/i);
-  const capitalSocial = getNumBR(texto, /Valor do Capital Social:\s*R?\$?\s*([\d.,]+)/i);
+  const capitalSocial = getNumBR(texto, /Valor do Capital Social\s*\(?R?\$?\)?\s*:\s*\n?\s*R?\$?\s*([\d.,]+)/i);
   const dataAbertura = getMatch(texto, /Data de Abertura:\s*([\d/]+)/i);
   const cnae = getMatch(texto, /CNAE:\s*([\d]+)/i);
   const descricaoCnae = getMatch(texto, /Descrição CNAE:\s*(.+)/i);
@@ -873,32 +919,42 @@ function parseProtectorPJ(texto) {
   const chequesSemFundo = getNumBR(texto, /Cheques Sem Fundos\s*[:\t]\s*(\d+)/i);
   const consultasRealizadas = getNumBR(texto, /Consultas Realizadas\s*[:\t]\s*(\d+)/i);
 
-  const probInadimplencia = getNumBR(texto, /Probabilidade de Inadimplência:\s*([\d.,]+)\s*%/i);
-  // Classe-letra (A-F) do bureau: aceita "Classe: F" (formato antigo), "Score [tab] F" (QUADRO DE RESUMO)
-  // e o padrão de linha da tabela SCORE "F [tab] 12 [tab] 0" (letra seguida de período e pontos).
-  const classeExterna = getMatch(texto, /\bScore\s*[:\t]\s*([A-F])\b/i)
-    || getMatch(texto, /Classe\s*[:\t]\s*([A-F])\b/i)
-    || getMatch(texto, /\b([A-F])\t\d{1,3}\t\d{1,4}\b/);
-  // Pontos numéricos: aceita "Pontos: 956" (formato com dois pontos) e também "score: 956"
-  // (visto em relatório real — o valor da célula "Pontos" da tabela vem como esse texto, não como número puro).
-  const matchPontos = texto.match(/SCORE[\s\S]{0,200}?Pontos:\s*(\d+)/i);
-  const matchPontosScoreTexto = texto.match(/SCORE[\s\S]{0,300}?\bscore\s*:\s*(\d{1,4})\b/i);
-  const pontosExternos = matchPontos ? parseInt(matchPontos[1]) : (matchPontosScoreTexto ? parseInt(matchPontosScoreTexto[1]) : null);
+  // Linha de dados da seção SCORE — uma função só resolve prob/classe/pontos juntos,
+  // em vez de 3 regex separadas que podiam se contradizer entre si.
+  const linhaScore = parseLinhaScore(texto);
+  const probInadimplencia = linhaScore.probInadimplencia;
+  const classeExterna = linhaScore.classeExterna
+    || getMatch(texto, /\bScore\s*[:\t]\s*([A-F])\b/i)
+    || getMatch(texto, /Classe\s*[:\t]\s*([A-F])\b/i);
+  const pontosExternos = linhaScore.pontosExternos;
   const tipoCliente = getMatch(texto, /Tipo:\s*(\w+)/i);
 
+  // Sócios: tabela "Nome [tab] Cargo [tab] Tipo Relacionamento [tab] Participação [tab] Ação"
+  // (formato real — a versão antiga só reconhecia "NOME - SOCIO - XX%", que não existe nos relatórios reais).
   const socios = [];
-  const sociosRegex = /([A-ZÀ-Ú][A-ZÀ-Ú\s.]+?)\s*-\s*S[OÓ]CIO\s*-\s*([\d.,]+)%/gi;
+  const sociosRegex = /^([A-ZÀ-Ú][A-ZÀ-Ú ]+?)\t.*?\bS[OÓ]CIO\b[\w-]*\t+([\d.,]+)%/gim;
   let sm;
   while ((sm = sociosRegex.exec(texto)) !== null) {
     socios.push({ nome: sm[1].trim(), percentual: parseFloat(sm[2].replace(',', '.')) });
   }
 
+  // Grupo Econômico: seção própria com blocos "CNPJ - Nome" seguidos de tabela CNPJ/Nome da Empresa/Cargo.
+  // CPF às vezes aparece sem o zero à esquerda (10 dígitos em vez de 11) — por isso 10-14, não só 11/14.
   const grupoEconomico = [];
-  const linhaGrupoRegex = /^([A-ZÀ-Ú0-9][A-ZÀ-Ú0-9\s.&-]+?)\s*\((\d{14}|\d{11})\)\s*-\s*(.+)$/;
-  texto.split('\n').forEach(linha => {
-    const gm = linha.trim().match(linhaGrupoRegex);
-    if (gm) grupoEconomico.push({ nome: gm[1].trim(), doc: gm[2], papel: gm[3].trim() });
-  });
+  const inicioGrupo = texto.indexOf('GRUPO ECONÔMICO');
+  if (inicioGrupo > -1) {
+    const fimGrupo = texto.search(/\n\s*SCORE\s*\n/i);
+    const secaoGrupo = texto.substring(inicioGrupo, fimGrupo > inicioGrupo ? fimGrupo : undefined);
+    const linhaGrupoRegex = /^(\d{10,14})\t(.+?)\t(.+)$/gm;
+    const vistos = new Set();
+    let gm;
+    while ((gm = linhaGrupoRegex.exec(secaoGrupo)) !== null) {
+      const chave = gm[1] + gm[2];
+      if (vistos.has(chave)) continue;
+      vistos.add(chave);
+      grupoEconomico.push({ doc: gm[1], nome: gm[2].trim(), papel: gm[3].trim() });
+    }
+  }
 
   return {
     tipoPessoa: 'PJ', fonte: 'PROTECTOR',
@@ -1316,6 +1372,29 @@ function limiteSugerido(a) {
   return Math.round(capital * (fatorClasse[a.classe_interna] ?? 0));
 }
 
+// Cruza o grupo econômico extraído do relatório com a base de clientes já analisados — prática
+// padrão de mercado: exposição de grupo é tão crítica quanto o risco do CNPJ analisado isoladamente.
+// Calculado em tempo real (não fica "congelado"), porque a base de clientes cresce com o tempo.
+async function verificarExposicaoGrupo(grupoEconomico) {
+  if (!grupoEconomico || grupoEconomico.length === 0) return [];
+  const docs = grupoEconomico.map(g => g.doc).filter(Boolean);
+  if (docs.length === 0) return grupoEconomico.map(g => ({ ...g, jaCliente: false }));
+
+  const { data: clientesEncontrados } = await db.from('clientes').select('id, cnpj, razao_social').in('cnpj', docs);
+  const porDoc = {};
+  (clientesEncontrados || []).forEach(c => { porDoc[c.cnpj] = c; });
+
+  const resultado = [];
+  for (const g of grupoEconomico) {
+    const cli = porDoc[g.doc];
+    if (!cli) { resultado.push({ ...g, jaCliente: false }); continue; }
+    const { data: ultimaAnalise } = await db.from('analises').select('classe_interna, created_at')
+      .eq('cliente_id', cli.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+    resultado.push({ ...g, jaCliente: true, classeAtual: ultimaAnalise?.classe_interna || null, nomeCliente: cli.razao_social });
+  }
+  return resultado;
+}
+
 // ==================== DASHBOARD ====================
 let riskDonutChart = null;
 
@@ -1658,6 +1737,7 @@ async function runAnalise() {
 
   try {
     const parsed = analisarRelatorio(texto, overrides);
+    parsed.exposicao_grupo = await verificarExposicaoGrupo(parsed.grupo_economico);
     await salvarAnalise(parsed, texto, responsavel);
     renderResultado(parsed);
     limparCorrecoesManuais();
@@ -1710,7 +1790,8 @@ async function salvarAnalise(parsed, textoOriginal, responsavel) {
     pontos_positivos: (parsed.pontos_positivos||[]).join('\n- '), pontos_atencao: (parsed.pontos_atencao||[]).join('\n- '),
     riscos_identificados: (parsed.riscos_identificados||[]).join('\n- '), parecer_completo: parsed.resumo_executivo,
     detalhes_classificacao: parsed.detalhes_classificacao,
-    dados_brutos: textoOriginal.substring(0, 2000), usuario_responsavel: responsavel
+    dados_brutos: textoOriginal.substring(0, 2000), usuario_responsavel: responsavel,
+    socios: parsed.socios || [], grupo_economico: parsed.grupo_economico || []
   });
   if (errAnalise) throw new Error('Erro ao salvar análise: ' + errAnalise.message);
 }
@@ -1721,17 +1802,137 @@ function converterDataBR(dataBR) {
   return `${p[2]}-${p[1]}-${p[0]}`;
 }
 
+// ==================== TEXTO RESUMIDO PARA COMPARTILHAR ====================
+const CLASSE_LABELS_RESUMO = { A: 'Muito Baixo', B: 'Baixo', C: 'Moderado', D: 'Alto', E: 'Crítico' };
+
+function montarTextoResumo(info) {
+  const linhas = [];
+  linhas.push(`📊 ANÁLISE DE CRÉDITO — ${info.razaoSocial || '—'}`);
+  linhas.push(`CNPJ/CPF: ${info.cnpj || '—'}`);
+  if (info.dataAbertura) linhas.push(`Aberta em ${info.dataAbertura}${info.tempoMercado ? ` (${info.tempoMercado} de mercado)` : ''}`);
+  linhas.push('');
+  linhas.push(`Score Protector: ${info.score ?? 'não identificado'}`);
+  linhas.push(`Classe: ${info.classeInterna || '—'}${CLASSE_LABELS_RESUMO[info.classeInterna] ? ` — ${CLASSE_LABELS_RESUMO[info.classeInterna]}` : ''}`);
+  linhas.push(`Prazo sugerido: ${info.prazoSugerido || '—'}`);
+  if (info.probInadimplencia !== undefined && info.probInadimplencia !== null) linhas.push(`Probabilidade de inadimplência: ${info.probInadimplencia}%`);
+  linhas.push('');
+  const restricoes = [];
+  if (info.protestos) restricoes.push(`${info.protestos} protesto(s)`);
+  if (info.inadimplencias) restricoes.push(`${info.inadimplencias} inadimplência(s)`);
+  if (info.acoes) restricoes.push(`${info.acoes} ação(ões) judicial(is)`);
+  linhas.push(restricoes.length ? `⚠️ Restrições: ${restricoes.join(', ')}` : '✅ Sem restrições identificadas');
+  if (info.parecer) { linhas.push(''); linhas.push(`Parecer: ${info.parecer}`); }
+  linhas.push('');
+  linhas.push(`Responsável: ${info.responsavel || '—'}${info.dataAnalise ? ` · ${info.dataAnalise}` : ''}`);
+  linhas.push('Gerado pela Central de Inteligência de Crédito — REI-FIX');
+  return linhas.join('\n');
+}
+
+function abrirResumoTexto(info) {
+  document.getElementById('resumoTextoArea').value = montarTextoResumo(info);
+  document.getElementById('modalResumoTexto').classList.add('open');
+}
+
+// A partir do resultado recém-gerado (Bureau ou Manual) — formato 'parsed' (snake_case, datas em dd/mm/yyyy)
+function gerarTextoResumoParsed(d) {
+  if (typeof d === 'string') d = JSON.parse(d);
+  abrirResumoTexto({
+    razaoSocial: d.razao_social, cnpj: d.cnpj, dataAbertura: d.data_abertura,
+    tempoMercado: tempoDeMercado(d.data_abertura), score: d.score_protector,
+    classeInterna: d.classe_interna, prazoSugerido: d.prazo_sugerido,
+    probInadimplencia: d.probabilidade_inadimplencia, protestos: d.protestos,
+    inadimplencias: d.inadimplencias, acoes: d.acoes, parecer: d.resumo_executivo,
+    responsavel: document.getElementById('analiseResponsavel') ? document.getElementById('analiseResponsavel').value : (document.getElementById('manResponsavel') ? document.getElementById('manResponsavel').value : ''),
+    dataAnalise: new Date().toLocaleString('pt-BR')
+  });
+}
+
+// A partir de uma análise já salva (linha do banco, com join de clientes) — datas em ISO
+function gerarTextoResumoAnalise(a) {
+  if (typeof a === 'string') a = JSON.parse(a);
+  abrirResumoTexto({
+    razaoSocial: a.clientes?.razao_social, cnpj: a.cnpj,
+    dataAbertura: a.clientes?.data_abertura ? fmtDate(a.clientes.data_abertura) : null,
+    tempoMercado: tempoDeMercado(a.clientes?.data_abertura), score: a.score_protector,
+    classeInterna: a.classe_interna, prazoSugerido: a.prazo_sugerido,
+    probInadimplencia: a.probabilidade_inadimplencia, protestos: a.protestos,
+    inadimplencias: a.inadimplencias, acoes: a.acoes, parecer: a.parecer_completo,
+    responsavel: a.usuario_responsavel, dataAnalise: fmtDateTime(a.created_at)
+  });
+}
+
+async function copiarResumoTexto() {
+  const texto = document.getElementById('resumoTextoArea').value;
+  try {
+    await navigator.clipboard.writeText(texto);
+    toast('Texto copiado!', 'success');
+  } catch (e) {
+    document.getElementById('resumoTextoArea').select();
+    document.execCommand('copy');
+    toast('Texto copiado!', 'success');
+  }
+}
+
+// Calcula tempo de mercado a partir da data de abertura (aceita dd/mm/yyyy ou ISO yyyy-mm-dd).
+function tempoDeMercado(data) {
+  if (!data) return null;
+  let d;
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+    const [dd, mm, yyyy] = data.split('/');
+    d = new Date(`${yyyy}-${mm}-${dd}`);
+  } else {
+    d = new Date(data);
+  }
+  if (isNaN(d.getTime())) return null;
+  const anos = (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+  if (anos < 0) return null;
+  if (anos < 1) return `${Math.max(1, Math.round(anos * 12))} meses`;
+  return `${Math.floor(anos)} ano${Math.floor(anos) === 1 ? '' : 's'}`;
+}
+
+// Renderiza Sócios + Exposição de Grupo Econômico — usado no resultado fresco e no modal de histórico.
+// Destaque visual em vermelho quando o grupo já tem alguma empresa em classe D/E na carteira:
+// é o tipo de sinal que análise isolada por CNPJ não mostra, mas que é prática padrão de mercado.
+function renderSociosGrupoHTML(socios, exposicaoGrupo) {
+  const temSocios = socios && socios.length > 0;
+  const temGrupo = exposicaoGrupo && exposicaoGrupo.length > 0;
+  if (!temSocios && !temGrupo) return '';
+
+  let html = '';
+  if (temSocios) {
+    html += `
+    <div class="parecer-section">
+      <div class="parecer-title" style="color:var(--purple)">🧑‍🤝‍🧑 Quadro de Sócios</div>
+      <ul class="parecer-list">${socios.map(s => `<li>${s.nome}${s.percentual ? ` — ${s.percentual}%` : ''}</li>`).join('')}</ul>
+    </div>`;
+  }
+  if (temGrupo) {
+    const algumRisco = exposicaoGrupo.some(g => g.jaCliente && ['D','E'].includes(g.classeAtual));
+    html += `
+    <div class="parecer-section" ${algumRisco ? 'style="border-left:3px solid var(--red);border-radius:0 var(--radius) var(--radius) 0"' : ''}>
+      <div class="parecer-title" style="color:${algumRisco ? 'var(--red)' : 'var(--purple)'}">🏢 Grupo Econômico — Exposição</div>
+      <ul class="parecer-list">${exposicaoGrupo.map(g => g.jaCliente
+        ? `<li>${g.nome} (${g.papel}) — <strong>já é cliente nosso</strong>${g.classeAtual ? `, classe atual: ${classBadgeShort(g.classeAtual)}` : ''}</li>`
+        : `<li>${g.nome} (${g.papel}) — ainda não é cliente nosso</li>`
+      ).join('')}</ul>
+      ${algumRisco ? '<div style="color:var(--red);font-size:12px;font-weight:700;margin-top:6px">⚠️ Esse grupo já tem empresa em classe de risco alto na sua carteira — considere isso na decisão, não só o CNPJ analisado isoladamente.</div>' : ''}
+    </div>`;
+  }
+  return html;
+}
+
 function renderResultado(d) {
   document.getElementById('analiseResult').innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <div>
         <div style="font-size:16px;font-weight:700">${d.razao_social || '—'}</div>
         <div class="text-muted">${d.cnpj || ''}</div>
+        ${d.data_abertura ? `<div class="text-muted" style="font-size:11.5px;margin-top:2px">Aberta em ${d.data_abertura}${tempoDeMercado(d.data_abertura) ? ` · ${tempoDeMercado(d.data_abertura)} de mercado` : ''}</div>` : ''}
       </div>
       ${confGauge(d.confianca)}
     </div>
 
-    <div class="grid-3" style="margin-bottom:16px">
+    <div class="grid-4" style="margin-bottom:16px">
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
         <div style="font-size:24px;font-weight:800">${d.score_protector ?? '—'}</div>
         <div class="text-muted" style="font-size:11px">Score Protector</div>
@@ -1744,7 +1945,12 @@ function renderResultado(d) {
         <div style="margin-bottom:6px">${recBadge(d.prazo_sugerido)}</div>
         <div class="text-muted" style="font-size:11px">Prazo Recomendado</div>
       </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
+        <div style="font-size:18px;font-weight:800;margin-top:3px">${fmtBRL(limiteSugerido({ classe_interna: d.classe_interna, capital_social: d.capital_social }))}</div>
+        <div class="text-muted" style="font-size:11px">Limite Sugerido*</div>
+      </div>
     </div>
+    <div class="text-muted" style="font-size:10.5px;margin:-12px 0 16px 0">*Estimativa não oficial (capital social × fator de classe) — não é regra de crédito definida pela Rei-Fix.</div>
 
     <div class="grid-2" style="margin-bottom:16px">
       <div style="background:var(--bg3);border-radius:var(--radius);padding:10px;text-align:center">
@@ -1756,6 +1962,8 @@ function renderResultado(d) {
         <div class="text-muted" style="font-size:11px">Ações Judiciais</div>
       </div>
     </div>
+
+    ${renderSociosGrupoHTML(d.socios, d.exposicao_grupo)}
 
     <div class="parecer-section">
       <div class="parecer-title" style="color:var(--blue)">🧮 Como a Classificação Foi Calculada</div>
@@ -1779,7 +1987,8 @@ function renderResultado(d) {
       <div class="parecer-text">${d.resumo_executivo}</div>
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:16px">
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick='gerarTextoResumoParsed(${JSON.stringify(d).replace(/'/g,"&#39;")})'>📤 Gerar Texto p/ Compartilhar</button>
       <button class="btn btn-secondary btn-sm" onclick="navigate('analises')">📋 Ver todas as análises</button>
       <button class="btn btn-secondary btn-sm" onclick="document.getElementById('relatorioTexto').value='';document.getElementById('analiseResult').innerHTML='<div class=empty><div style=font-size:48px;margin-bottom:12px>📄</div><div>Nova análise</div></div>'">🔄 Nova Análise</button>
     </div>
@@ -1934,7 +2143,7 @@ function renderResultadoManual(d, pontosInternos) {
       <div><div style="font-size:16px;font-weight:700">${d.razao_social}</div><div class="text-muted">${d.cnpj}</div></div>
       ${confGauge(d.confianca)}
     </div>
-    <div class="grid-3" style="margin-bottom:16px">
+    <div class="grid-4" style="margin-bottom:16px">
       <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
         <div style="font-size:24px;font-weight:800">${pontosInternos}/100</div>
         <div class="text-muted" style="font-size:11px">Pontuação Manual</div>
@@ -1947,7 +2156,12 @@ function renderResultadoManual(d, pontosInternos) {
         <div style="margin-bottom:6px">${recBadge(d.prazo_sugerido)}</div>
         <div class="text-muted" style="font-size:11px">Prazo Recomendado</div>
       </div>
+      <div style="text-align:center;background:var(--bg3);border-radius:var(--radius);padding:12px">
+        <div style="font-size:18px;font-weight:800;margin-top:3px">${fmtBRL(limiteSugerido({ classe_interna: d.classe_interna, capital_social: d.capital_social }))}</div>
+        <div class="text-muted" style="font-size:11px">Limite Sugerido*</div>
+      </div>
     </div>
+    <div class="text-muted" style="font-size:10.5px;margin:-12px 0 16px 0">*Estimativa não oficial (capital social × fator de classe) — não é regra de crédito definida pela Rei-Fix.</div>
     <div class="parecer-section">
       <div class="parecer-title" style="color:var(--blue)">🧮 Como a Classificação Foi Calculada</div>
       <ul class="parecer-list">${d.detalhes_classificacao.map(x => `<li>${x.fator} → <strong>${x.impacto}</strong></li>`).join('')}</ul>
@@ -1958,13 +2172,14 @@ function renderResultadoManual(d, pontosInternos) {
     <div class="parecer-section" style="border-left:3px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0">
       <div class="parecer-title" style="color:var(--blue)">📋 Parecer Executivo</div><div class="parecer-text">${d.resumo_executivo}</div>
     </div>
+    <button class="btn btn-primary btn-sm mt-12" onclick='gerarTextoResumoParsed(${JSON.stringify(d).replace(/'/g,"&#39;")})'>📤 Gerar Texto p/ Compartilhar</button>
     <button class="btn btn-secondary btn-sm mt-12" onclick="navigate('analises')">📋 Ver todas as análises</button>
   `;
 }
 
 // ==================== LISTA ANÁLISES ====================
 async function loadAnalises() {
-  const { data } = await db.from('analises').select('*, clientes(razao_social)').order('created_at', { ascending: false });
+  const { data } = await db.from('analises').select('*, clientes(razao_social, data_abertura, capital_social)').order('created_at', { ascending: false });
   if (!data || data.length === 0) {
     document.getElementById('analisesList').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text3)">Nenhuma análise ainda. <a href="#" onclick="navigate(\'nova-analise\')">Criar primeira →</a></td></tr>';
     return;
@@ -2052,7 +2267,7 @@ async function excluirCliente(id, nome) {
 
 async function verCliente(cnpj) {
   navigate('analises');
-  const { data } = await db.from('analises').select('*, clientes(razao_social)').eq('cnpj', cnpj).order('created_at', { ascending: false });
+  const { data } = await db.from('analises').select('*, clientes(razao_social, data_abertura, capital_social)').eq('cnpj', cnpj).order('created_at', { ascending: false });
   if (!data || data.length === 0) { toast('Nenhuma análise encontrada para este cliente', 'info'); return; }
   document.getElementById('analisesList').innerHTML = data.map(a => `
     <tr>
@@ -2070,8 +2285,9 @@ async function verCliente(cnpj) {
 }
 
 // ==================== MODAL ANÁLISE ====================
-function openAnaliseModal(a) {
+async function openAnaliseModal(a) {
   if (typeof a === 'string') a = JSON.parse(a);
+  window.__modalAnaliseAtual = a;
   document.getElementById('modalTitle').textContent = `Análise — ${a.cnpj}`;
   const detalhes = a.detalhes_classificacao || [];
   document.getElementById('modalBody').innerHTML = `
@@ -2080,6 +2296,7 @@ function openAnaliseModal(a) {
         <div class="text-muted" style="font-size:11px;margin-bottom:4px">CLIENTE</div>
         <div style="font-weight:600">${a.clientes?.razao_social || '—'}</div>
         <div class="text-muted">${a.cnpj}</div>
+        ${a.clientes?.data_abertura ? `<div class="text-muted" style="font-size:11.5px;margin-top:2px">Aberta em ${fmtDate(a.clientes.data_abertura)}${tempoDeMercado(a.clientes.data_abertura) ? ` · ${tempoDeMercado(a.clientes.data_abertura)} de mercado` : ''}</div>` : ''}
       </div>
       <div>
         <div class="text-muted" style="font-size:11px;margin-bottom:4px">DATA DA ANÁLISE</div>
@@ -2110,10 +2327,19 @@ function openAnaliseModal(a) {
         <div class="text-muted" style="font-size:11px">Consultas</div>
       </div>
     </div>
-    <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
-      <div><div class="text-muted" style="font-size:11px">PRAZO SUGERIDO</div><div style="margin-top:6px">${recBadge(a.prazo_sugerido)}</div></div>
-      <div><div class="text-muted" style="font-size:11px">PROB. INADIMPLÊNCIA</div><div style="font-size:18px;font-weight:700;color:${(a.probabilidade_inadimplencia||0)>15?'var(--red)':'var(--amber)'}">${a.probabilidade_inadimplencia ?? '—'}%</div></div>
+    <div class="grid-3" style="margin-bottom:12px">
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;text-align:center">
+        <div class="text-muted" style="font-size:11px">PRAZO SUGERIDO</div><div style="margin-top:6px">${recBadge(a.prazo_sugerido)}</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;text-align:center">
+        <div class="text-muted" style="font-size:11px">PROB. INADIMPLÊNCIA</div><div style="font-size:18px;font-weight:700;margin-top:4px;color:${(a.probabilidade_inadimplencia||0)>15?'var(--red)':'var(--amber)'}">${a.probabilidade_inadimplencia ?? '—'}%</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:14px;text-align:center">
+        <div class="text-muted" style="font-size:11px">LIMITE SUGERIDO*</div><div style="font-size:16px;font-weight:700;margin-top:4px">${fmtBRL(limiteSugerido({ classe_interna: a.classe_interna, capital_social: a.clientes?.capital_social }))}</div>
+      </div>
     </div>
+    <div class="text-muted" style="font-size:10.5px;margin:-8px 0 16px 0">*Estimativa não oficial — não é regra de crédito definida pela Rei-Fix.</div>
+    <div id="modalSociosGrupo">${a.socios?.length || a.grupo_economico?.length ? '<div class="text-muted" style="font-size:12px;padding:8px 0">Verificando exposição de grupo econômico...</div>' : ''}</div>
     ${detalhes.length ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--blue)">🧮 Cálculo da Classificação</div><ul class="parecer-list">${detalhes.map(x=>`<li>${x.fator} → <strong>${x.impacto}</strong></li>`).join('')}</ul></div>` : ''}
     ${a.pontos_positivos ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--green)">✅ Pontos Positivos</div><div class="parecer-text">${a.pontos_positivos.replace(/\n/g,'<br>')}</div></div>` : ''}
     ${a.pontos_atencao ? `<div class="parecer-section"><div class="parecer-title" style="color:var(--amber)">⚠️ Atenção</div><div class="parecer-text">${a.pontos_atencao.replace(/\n/g,'<br>')}</div></div>` : ''}
@@ -2121,6 +2347,12 @@ function openAnaliseModal(a) {
     ${a.parecer_completo ? `<div class="parecer-section" style="border-left:3px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0"><div class="parecer-title" style="color:var(--blue)">📋 Parecer Executivo</div><div class="parecer-text">${a.parecer_completo}</div></div>` : ''}
   `;
   document.getElementById('modalAnalise').classList.add('open');
+
+  if (a.socios?.length || a.grupo_economico?.length) {
+    const exposicao = await verificarExposicaoGrupo(a.grupo_economico || []);
+    const alvo = document.getElementById('modalSociosGrupo');
+    if (alvo) alvo.innerHTML = renderSociosGrupoHTML(a.socios, exposicao);
+  }
 }
 
 // ==================== EXCEÇÕES ====================
